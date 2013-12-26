@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+  h1
+    New Tournament
+  form(method="post", action="")
+    input(type="text", name="name", placeholder="name")
+    input(type="text", name="location", placeholder="location")
+    input(type="text", name="director", placeholder="director")
+    input(type="submit")
