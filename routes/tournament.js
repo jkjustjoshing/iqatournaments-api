@@ -1,30 +1,30 @@
-module.exports = function(moment, Tournament){
+module.exports = function(moment, Tournament, ObjectId, OutputFormat){
 
   this.list = function(req, res){
     Tournament.find(function(err, tournaments){
       if(!err){
-        return res.send(tournaments);
+        return res.send(OutputFormat.success(tournaments));
       }else{
-        return console.log(err);
+        return res.send(OutputFormat.error(err));
       }
     });
-  }
+  };
 
   this.get = function(req, res){
     var id = req.route.params.id;
-    Tournament.find(function(err, tournament){
+    Tournament.find({_id: new ObjectId(id)}, function(err, tournament){
       if(!err){
-        return res.send(tournament);
+        return res.send(OutputFormat.success(tournament));
       }else{
-        return console.log(err);
+        return res.send(OutputFormat.error(err));
       }
     });
-  }
+  };
 
   this.new = function(req, res){
     console.log('new');
     res.render('tournaments/new', {title: 'New Tournament'});
-  }
+  };
 
   this.create = function(req, res){
     console.log('create');
@@ -37,12 +37,19 @@ module.exports = function(moment, Tournament){
 
     tournament.save(function(err){
       if(!err){
-        res.redirect('/tournaments');
-        return console.log("created");
+        return res.send(OutputFormat.success({}));
       }else {
-        return console.log(err);
+        return res.send(OutputFormat.success(err));
       }
     });
-  }
+  };
+
+  this.patch = function(req, res){
+
+  };
+
+  this.update = function(req, res){
+
+  };
 
 }

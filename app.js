@@ -8,11 +8,13 @@ var routes = require('./routes');
 var http = require('http');
 var path = require('path');
 var moment = require('moment');
-
+var OutputFormat = require('./utils/OutputFormat')
 // Database Connection
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/tournament_management');
+
+var ObjectId = mongoose.Types.ObjectId;
 
 var app = express();
 
@@ -53,14 +55,26 @@ var GameSchema = new Schema({
 var Game = mongoose.model('Game', GameSchema);
 
 var tournamentInit = require('./routes/tournament');
-var tournament = new tournamentInit(moment, Tournament);
+var tournament = new tournamentInit(moment, Tournament, ObjectId, OutputFormat);
 
 app.get('/', routes.index);
 
 app.get('/tournaments', tournament.list);
-app.get('/tournaments/:id(\\d+)', tournament.get);
+app.get('/tournament/:id([a-fA-F0-9]{24})', tournament.get);
+app.post('/tournament/:id([a-fA-F0-9]{24})/update', tournament.patch);
+app.get('/tournament/:id([a-fA-F0-9]{24})/update', tournament.update);
 app.get('/tournaments/new', tournament.new);
 app.post('/tournaments/new', tournament.create);
+
+var gameInit = require('./routes/game');
+var game = new gameInit(Game, ObjectId, OutputFormat);
+
+app.get('/games', game.list);
+app.get('/game/:id([a-fA-F0-9]{24})', game.get);
+app.post('/game/:id([a-fA-F0-9]{24})/update', game.patch);
+app.get('/game/:id([a-fA-F0-9]{24})/update', game.update);
+app.get('/games/new', game.new);
+app.post('/games/new', game.create);
 
 
 http.createServer(app).listen(app.get('port'), function(){
