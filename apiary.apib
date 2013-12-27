@@ -2,37 +2,52 @@ FORMAT: 1A
 HOST: http://www.google.com
 
 # Tournament Manager API
-Notes API is a *short texts saving* service similar to its physical paper presence on your table.
+Manage tournaments easily as a team, ref, or tournament director.
 
-# Group Notes
-Notes related resources of the **Notes API**
+# Group Tournaments
+Tournaments related resources of the **Tournament Manager API**
 
-## Notes Collection [/notes]
-### List all Notes [GET]
+## Tournaments Collection [/tournaments]
+### List all Tournaments [GET]
 + Response 200 (application/json)
 
         [{
-          "id": 1, "title": "Jogging in park"
+          "id": "200000000000000000000000", 
+          "name": "Northeast Regionals",
+          "date": "11/13/2013",
+          "director": "Rob Clifford"
         }, {
-          "id": 2, "title": "Pick-up posters from post-office"
+          "id": "400000000000000000000000", 
+          "name": "Snowbelt Championship",
+          "date": "12/01/2012",
+          "director": "Jeff Sherman"
         }]
 
-### Create a Note [POST]
+### Create a Tournament [POST]
 + Request (application/json)
 
-        { "title": "Buy cheese and bread for breakfast." }
+        { 
+          "name": "World Cup 7",
+          "date": "04/05/2013",
+          "director": "Logan Anbinder"
+        }
 
 + Response 201 (application/json)
 
-        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+        { 
+          "id": "600000000000000000000000",
+          "name": "World Cup 7",
+          "date": "04/05/2013",
+          "director": "Logan Anbinder"
+        }
 
-## Note [/notes/{id}]
-A single Note object with all its details
+## Tournament [/tournaments/{id}]
+A single Tournament object with its top level data
 
 + Parameters
-    + id (required, number, `1`) ... Numeric `id` of the Note to perform action with. Has example value.
+    + id (required, string, `45af236dc25e2f5029addf12`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
 
-### Retrieve a Note [GET]
+### Retrieve a Tournament [GET]
 + Response 200 (application/json)
 
     + Header
@@ -41,7 +56,13 @@ A single Note object with all its details
 
     + Body
 
-            { "id": 2, "title": "Pick-up posters from post-office" }
+            { 
+              "id": "900000000000000000000000",
+              "name": "World Cup 8",
+              "date": "04/05/2014",
+              "director": "Josh Kramer"
+            }
+
 
 ### Remove a Note [DELETE]
 + Response 204
