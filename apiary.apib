@@ -98,6 +98,10 @@ A single Tournament object with its top and second level data (Games and Teams)
                     {
                         "id": "900000000000000000000003",
                         "name": "U of R Thestrals"
+                    },
+                    {
+                        "id": "900000000000000000000013",
+                        "name": "NY Badassalisks"
                     }
                 ],
                 "games": [
@@ -165,6 +169,137 @@ A single Tournament object with its top and second level data (Games and Teams)
                             "name": "John Goinn"
                         }
                         ]
-                    },
+                    }
                 ]
             }
+            
+# Group Games
+Game related resources of the **Tournament Manager API**
+
+## Games Collection [/tournaments/{id}/games]
+
+### List all games [GET]
++ Parameters
+    + id (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
++ Response 200 (application/json)
+    
+        [
+            {
+                "id": "900000000000000000000004",
+                "pitch": "1",
+                "startTime": "2014-04-09T11:20+05:00",
+                "headReferee": {
+                    "id": "400000000000000000000001",
+                    "name": "Jeff Sherman"
+                },
+                 "snitch": {
+                    "id": "400000000000000000000011",
+                    "name": "Max Desmond"
+                },
+                "teams": [
+                    {
+                        "id": "900000000000000000000003",
+                        "name": "U of R Thestrals"
+                    },
+                    {
+                        "id": "900000000000000000000002",
+                        "name": "Boston University"
+                    }
+                ]
+            },
+            {
+                "id": "900000000000000000000006",
+                "pitch": "2",
+                "startTime": "2014-04-09T09:20+05:00",
+                "endTime": "2014-04-09T09:43+05:00",
+                "headReferee": {
+                    "id": "400000000000000000000002",
+                    "name": "Samy Mousa"
+                },
+                "snitch": {
+                    "id": "400000000000000000000011",
+                    "name": "Max Desmond"
+                },
+                "teams": [
+                    {
+                        "id": "900000000000000000000001",
+                        "name": "RIT Dark Marks"
+                    },
+                    {
+                        "id": "900000000000000000000002",
+                        "name": "Boston University"
+                    }
+                ],
+                "assistantReferees": [
+                    {
+                    "id": "400000000000000000000003",
+                    "name": "Josh Kramer"
+                },
+                {
+                    "id": "400000000000000000000004",
+                    "name": "Snow Woodcock"
+                },
+                {
+                    "id": "400000000000000000000005",
+                    "name": "Kyle Leslie"
+                },
+                {
+                    "id": "400000000000000000000006",
+                    "name": "John Goinn"
+                }
+                ]
+            }
+        ]
+
+### Create a game [POST]
+
++ Request (application/json)
+    
+        {
+            "pitch": "1",
+            "startTime": "2014-04-09T11:20+05:00",
+            "headReferee": {
+                "id": "400000000000000000000001",
+                "name": "Jeff Sherman"
+            },
+             "snitch": {
+                "id": "400000000000000000000011",
+                "name": "Max Desmond"
+            },
+            "teams": [
+                {
+                    "id": "900000000000000000000003",
+                    "name": "U of R Thestrals"
+                },
+                {
+                    "id": "900000000000000000000002",
+                    "name": "Boston University"
+                }
+            ]
+        }
+
++ Response 200 (application/json)
+
+        {
+            "id": "900000000000000000000004",
+            "pitch": "1",
+            "startTime": "2014-04-09T11:20+05:00",
+            "headReferee": {
+                "id": "400000000000000000000001",
+                "name": "Jeff Sherman"
+            },
+             "snitch": {
+                "id": "400000000000000000000011",
+                "name": "Max Desmond"
+            },
+            "teams": [
+                {
+                    "id": "900000000000000000000003",
+                    "name": "U of R Thestrals"
+                },
+                {
+                    "id": "900000000000000000000002",
+                    "name": "Boston University"
+                }
+            ]
+        }
