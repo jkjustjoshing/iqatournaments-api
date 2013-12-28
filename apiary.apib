@@ -138,6 +138,7 @@ A single Tournament object with its top and second level data (Games and Teams)
                         "pitch": "2",
                         "startTime": "2014-04-09T09:20+05:00",
                         "endTime": "2014-04-09T09:43+05:00",
+                        "gameTime": "17:32",
                         "headReferee": {
                             "id": "400000000000000000000002",
                             "name": "Samy Mousa"
@@ -149,11 +150,15 @@ A single Tournament object with its top and second level data (Games and Teams)
                         "teams": [
                             {
                                 "id": "900000000000000000000001",
-                                "name": "RIT Dark Marks"
+                                "name": "RIT Dark Marks",
+                                "score": 100,
+                                "snatch": true
                             },
                             {
                                 "id": "900000000000000000000002",
-                                "name": "Boston University"
+                                "name": "Boston University",
+                                "score": 90,
+                                "snatch": false
                             }
                         ],
                         "assistantReferees": [
@@ -217,6 +222,7 @@ Game related resources of the **Tournament Manager API**
                 "pitch": "2",
                 "startTime": "2014-04-09T09:20+05:00",
                 "endTime": "2014-04-09T09:43+05:00",
+                "gameTime": "17:32",
                 "headReferee": {
                     "id": "400000000000000000000002",
                     "name": "Samy Mousa"
@@ -229,10 +235,14 @@ Game related resources of the **Tournament Manager API**
                     {
                         "id": "900000000000000000000001",
                         "name": "RIT Dark Marks"
+                        "score": 100
+                        "snatch": true
                     },
                     {
                         "id": "900000000000000000000002",
-                        "name": "Boston University"
+                        "name": "Boston University",
+                        "score": 90,
+                        "snatch": false
                     }
                 ],
                 "assistantReferees": [
