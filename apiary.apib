@@ -65,7 +65,7 @@ A single Tournament object with its top level data
             }
 
 
-### Remove a Note [DELETE]
+### Remove a Tournament [DELETE]
 + Response 204
 
 ## Tournament Details [/tournaments/{id}/details]
@@ -75,7 +75,6 @@ A single Tournament object with its top and second level data (Games and Teams)
 
 + Parameters
     + id (required, string, `45af236dc25e2f5029addf12`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
-    + details (optional) ... Specify details to get teams and games returned with the 
 
 + Response 200 (application/json)
 
@@ -177,10 +176,10 @@ A single Tournament object with its top and second level data (Games and Teams)
 Game related resources of the **Tournament Manager API**
 
 ## Games Collection [/tournaments/{id}/games]
-
-### List all games [GET]
 + Parameters
     + id (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
+
+### List all Games [GET]
 + Response 200 (application/json)
     
         [
@@ -251,7 +250,7 @@ Game related resources of the **Tournament Manager API**
             }
         ]
 
-### Create a game [POST]
+### Create a Game [POST]
 
 + Request (application/json)
     
@@ -303,3 +302,100 @@ Game related resources of the **Tournament Manager API**
                 }
             ]
         }
+
+## Game [/tournaments/{tournamentid}/games/{gameid}]
++ Parameters
+    + tournamentid (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
+    + gameid (required, string, `45af236dc25e2f5029add313`) ... Hexadecimal string `id` of the Game to perform action with. Has example value.
+
+### Retrieve a Game [GET]
++ Response 200 (application/json)
+    
+        {
+            "id": "900000000000000000000004",
+            "pitch": "1",
+            "startTime": "2014-04-09T11:20+05:00",
+            "headReferee": {
+                "id": "400000000000000000000001",
+                "name": "Jeff Sherman"
+            },
+             "snitch": {
+                "id": "400000000000000000000011",
+                "name": "Max Desmond"
+            },
+            "teams": [
+                {
+                    "id": "900000000000000000000003",
+                    "name": "U of R Thestrals"
+                },
+                {
+                    "id": "900000000000000000000002",
+                    "name": "Boston University"
+                }
+            ]
+        }
+
+### Remove a Came [DELETE]
++ Response 204
+
+## Teams Collection [/teams]
+
+### List all Teams [GET]
++ Response 200 (application/json)
+    
+        [
+            {
+                "id": "900000000000000000000001",
+                "name": "RIT Dark Marks"
+            },
+            {
+                "id": "900000000000000000000002",
+                "name": "Boston University"
+            },
+            {
+                "id": "900000000000000000000003",
+                "name": "U of R Thestrals"
+            },
+            {
+                "id": "900000000000000000000013",
+                "name": "NY Badassalisks"
+            },
+            {
+                "id": "900000000000000000000023",
+                "name": "Tufflepuffs"
+            }
+        ]
+
+### Create a Team [POST]
+
++ Request (application/json)
+    
+        {
+            "name": "RIT Dark Marks"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "id": "900000000000000000000001",
+            "name": "RIT Dark Marks"
+        }
+
+
+## Team [/teams/{id}]
++ Parameters
+    + id (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Team to perform action with. Has example value.
+
+### Retrieve a Team [GET]
++ Response 200 (application/json)
+    
+        {
+            "id": "900000000000000000000002",
+            "name": "Boston University"
+        }
+
+
+### Remove a Team [DELETE]
++ Response 204
+
+
