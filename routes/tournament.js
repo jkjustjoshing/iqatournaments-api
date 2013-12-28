@@ -3,7 +3,7 @@ module.exports = function(moment, Tournament, ObjectId, OutputFormat){
   this.list = function(req, res){
     Tournament.find(function(err, tournaments){
       if(!err){
-        return res.send(OutputFormat.success(tournaments));
+        return res.send(Tournament.format(tournaments));
       }else{
         return res.send(OutputFormat.error(err));
       }
@@ -12,11 +12,22 @@ module.exports = function(moment, Tournament, ObjectId, OutputFormat){
 
   this.get = function(req, res){
     var id = req.route.params.id;
-    Tournament.find({_id: new ObjectId(id)}, function(err, tournament){
+    Tournament.findOne({_id: new ObjectId(id)}, function(err, tournament){
       if(!err){
-        return res.send(OutputFormat.success(tournament));
+        return res.send(Tournament.format(tournament));
       }else{
         return res.send(OutputFormat.error(err));
+      }
+    });
+  };
+
+  this.delete = function(req, res){
+    var id = req.route.params.id;
+    Tournament.findOne({_id: new ObjectId(id)}, function(err, tournament){
+      if(!err && tournament && tournament.remove()){
+        return res.send(204);
+      }else{
+        return res.send(404);
       }
     });
   };
@@ -32,8 +43,10 @@ module.exports = function(moment, Tournament, ObjectId, OutputFormat){
       name: req.body.name,
       location: req.body.location,
       director: req.body.director,
-      date: moment().unix()
+      date: moment().format('L')
     });
+
+    console.log(req);
 
     tournament.save(function(err){
       if(!err){

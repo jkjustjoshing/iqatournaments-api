@@ -12,6 +12,7 @@ var OutputFormat = require('./utils/OutputFormat')
 // Database Connection
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+var idRegex = '([a-fA-F0-9]{24})';
 mongoose.connect('mongodb://localhost:27017/tournament_management');
 
 var ObjectId = mongoose.Types.ObjectId;
@@ -36,23 +37,8 @@ if ('development' == app.get('env')) {
 }
 
 // Define database schema
-var Schema = mongoose.Schema;
-var TournamentSchema = new Schema({
-  name: {type: String, required: true, unique: true},
-  director: {type: String, required: true},
-  location: {type: String, required: true},
-  date: {type: Number, required: true, default: moment().unix()}
-});
-var Tournament = mongoose.model('Tournament', TournamentSchema);
-var GameSchema = new Schema({
-  teams: [{
-    name: {type:String, required: true}, 
-    score: {type: Number, required: true}
-  }],
-  duration: {type: Number, default: 20},
-  headRef: {type: String, required: true}
-});
-var Game = mongoose.model('Game', GameSchema);
+var Game = require('./models/game.js')(mongoose);
+var Tournament = require('./models/tournament.js')(mongoose, moment, Game);
 
 var tournamentInit = require('./routes/tournament');
 var tournament = new tournamentInit(moment, Tournament, ObjectId, OutputFormat);
@@ -60,21 +46,29 @@ var tournament = new tournamentInit(moment, Tournament, ObjectId, OutputFormat);
 app.get('/', routes.index);
 
 app.get('/tournaments', tournament.list);
-app.get('/tournament/:id([a-fA-F0-9]{24})', tournament.get);
-app.post('/tournament/:id([a-fA-F0-9]{24})/update', tournament.patch);
-app.get('/tournament/:id([a-fA-F0-9]{24})/update', tournament.update);
-app.get('/tournaments/new', tournament.new);
-app.post('/tournaments/new', tournament.create);
+app.post('/tournaments', tournament.create);
+app.get('/tournaments/:id'+idRegex, tournament.get);
+app.del('/tournaments/:id'+idRegex, tournament.delete);
+//app.post('/tournaments/:id([a-fA-F0-9]{24})/update', tournament.patch);
+//app.get('/tournament/:id([a-fA-F0-9]{24})/update', tournament.update);
+//app.get('/tournaments/new', tournament.new);
 
 var gameInit = require('./routes/game');
 var game = new gameInit(Game, ObjectId, OutputFormat);
 
-app.get('/games', game.list);
-app.get('/game/:id([a-fA-F0-9]{24})', game.get);
-app.post('/game/:id([a-fA-F0-9]{24})/update', game.patch);
-app.get('/game/:id([a-fA-F0-9]{24})/update', game.update);
-app.get('/games/new', game.new);
-app.post('/games/new', game.create);
+var root = '/tournaments/:tournamentid'+idRegex+'/games';
+app.get(root, game.list);
+app.post(root, game.create);
+app.get(root+'/:id'+idRegex, game.get);
+app.del(root+'/:id'+idRegex, game.delete);
+
+
+// app.get('/games', game.list);
+// app.get('/game/:id'+idRegex, game.get);
+// app.post('/game/:id([a-fA-F0-9]{24})/update', game.patch);
+// app.get('/game/:id([a-fA-F0-9]{24})/update', game.update);
+// app.get('/games/new', game.new);
+// app.post('/games/new', game.create);
 
 
 http.createServer(app).listen(app.get('port'), function(){

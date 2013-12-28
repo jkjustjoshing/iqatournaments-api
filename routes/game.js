@@ -21,6 +21,17 @@ module.exports = function(Game, ObjectId, OutputFormat){
     });
   };
 
+  this.delete = function(req, res){
+    var id = req.route.params.id;
+    Game.find({_id: new ObjectId(id)}, function(err, game){
+      if(!err){
+        return res.send(OutputFormat.success(game));
+      }else{
+        return res.send(OutputFormat.error(err));
+      }
+    });
+  };
+
   this.new = function(req, res){
     console.log('new');
     res.render('games/new', {title: 'New Game'});
