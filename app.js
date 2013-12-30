@@ -35,6 +35,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
+  
+  // Test runner
+  app.use('/public/test', express.static(__dirname+'/public/test'));
+
 }
 
 // Define database schema
@@ -82,7 +86,6 @@ app.del(root+'/:id'+idRegex, game.delete);
 
 var personInit = require('./routes/person');
 var person = new personInit(Person, ObjectId, OutputFormat);
-
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
