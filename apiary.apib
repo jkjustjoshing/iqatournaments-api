@@ -12,23 +12,32 @@ Tournaments related resources of the **Tournament Manager API**
 + Response 200 (application/json)
 
         [{
-          "id": "200000000000000000000000", 
+          "id": "northeastregionals2013", 
           "name": "Northeast Regionals",
           "location": "Rochester, NY",
           "date": "11/13/2013",
           "director": "Rob Clifford"
         }, {
-          "id": "400000000000000000000000", 
+          "id": "snowbeltchampionship2012", 
           "name": "Snowbelt Championship",
           "location": "Rochester, NY",
           "date": "12/01/2012",
           "director": "Jeff Sherman"
+        },
+        { 
+          "id": "worldcup7",
+          "name": "World Cup 7",
+          "location": "Myrtle Beach, SC",
+          "date": "04/05/2013",
+          "director": "Logan Anbinder"
         }]
 
 ### Create a Tournament [POST]
+The 'id' must be unique, can only consist of a-z, 0-9, and '-'. Ids containing uppercase values will be converted to lowercase before being stored.
 + Request (application/json)
 
         { 
+          "id": "WorldCup7"
           "name": "World Cup 7",
           "location": "Myrtle Beach, SC",
           "date": "04/05/2013",
@@ -38,7 +47,7 @@ Tournaments related resources of the **Tournament Manager API**
 + Response 201 (application/json)
 
         { 
-          "id": "600000000000000000000000",
+          "id": "worldcup7",
           "name": "World Cup 7",
           "location": "Myrtle Beach, SC",
           "date": "04/05/2013",
@@ -46,23 +55,18 @@ Tournaments related resources of the **Tournament Manager API**
         }
 
 ## Tournament [/tournaments/{id}]
-A single Tournament object with its top level data
+A single Tournament object with its top level data.
 
 + Parameters
-    + id (required, string, `45af236dc25e2f5029addf12`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
+    + id (required, string) ... The id of the requested tournament, case insensitive.
 
 ### Retrieve a Tournament [GET]
 
 + Response 200 (application/json)
-
-    + Header
-
-            X-My-Header: The Value
-
     + Body
 
             { 
-              "id": "900000000000000000000000",
+              "id": "worldcup7",
               "name": "World Cup 7",
               "location": "Myrtle Beach, SC",
               "date": "04/05/2014",
@@ -79,14 +83,14 @@ A single Tournament object with its top and second level data (Games and Teams)
 ### Retrieve a Tournament [GET]
 
 + Parameters
-    + id (required, string, `45af236dc25e2f5029addf12`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
+    + id (required, string) ... The id of the requested tournament, case insensitive.
 
 + Response 200 (application/json)
 
     + Body
     
             { 
-                "id": "900000000000000000000000",
+                "id": "worldcup7",
                 "name": "World Cup 7",
                 "location": "Myrtle Beach, SC",
                 "date": "04/05/2014",
