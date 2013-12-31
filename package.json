@@ -25,7 +25,7 @@
     "grunt-concurrent": "latest",
     "grunt-mocha-test": "latest",
     "load-grunt-tasks": "~0.1.0",
-    "time-grunt": "~0.1.1"
+    "time-grunt": "~0.1.1",
     "frisby": "latest"
   },
   "dependencies": {
@@ -39,5 +39,6 @@
     "async": "latest",
     "grunt": "latest",
     "grunt-cli": "latest",
+    "underscore": "latest"
   }
 }

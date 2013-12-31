@@ -1,0 +1,7 @@
+{
+    "db": "mongodb://localhost/iqatournaments-travis",
+    "port": 3001,
+    "app": {
+        "name": "IQA Tournaments API - A tournament management API for Quidditch - Test on travis"
+    }
+}

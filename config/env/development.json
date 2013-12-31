@@ -1,0 +1,6 @@
+{
+    "db": "mongodb://localhost/iqatournaments-dev",
+    "app": {
+        "name": "IQA Tournaments API - A tournament management API for Quidditch - Development"
+    }
+}

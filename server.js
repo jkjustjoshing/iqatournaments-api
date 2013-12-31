@@ -4,17 +4,21 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
+var routes = require('./app/routes');
 var http = require('http');
 var path = require('path');
 var moment = require('moment');
-var OutputFormat = require('./utils/OutputFormat')
 
-// Database Connection
-var mongo = require('mongodb');
-var mongoose = require('mongoose');
+// Load configurations
+var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development',
+    config = require('./config/config'),
+    mongoose = require('mongoose');
+
+// Bootstrap db connection
+var db = mongoose.connect(config.db);
+
+var OutputFormat = {find: function(foo){console.log(foo);}};
 var idRegex = '([a-zA-z0-9\-]{3,})';
-mongoose.connect('mongodb://localhost:27017/tournament_management');
 
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -39,19 +43,15 @@ app.all('*', function(req, res, next){
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
-  
-  // Test runner
-  app.use('/public/test', express.static(__dirname+'/public/test'));
-
 }
 
 // Define database schema
-var Game = require('./models/game.js')(mongoose);
-var Tournament = require('./models/tournament.js')(mongoose, moment, Game);
-var Team = require('./models/team.js')(mongoose);
-var Person = require('./models/person.js')(mongoose);
+var Game = require('./app/models/game.js');
+var Tournament = require('./app/models/tournament.js');
+var Team = require('./app/models/team.js')(mongoose);
+var Person = require('./app/models/person.js')(mongoose);
 
-var tournamentInit = require('./routes/tournament');
+var tournamentInit = require('./app/routes/tournament');
 var tournament = new tournamentInit(moment, Tournament, ObjectId, OutputFormat);
 
 app.get('/', routes.index);
@@ -65,7 +65,7 @@ app.del('/tournaments/:id'+idRegex, tournament.delete);
 //app.get('/tournament/:id([a-fA-F0-9]{24})/update', tournament.update);
 //app.get('/tournaments/new', tournament.new);
 
-var teamInit = require('./routes/team');
+var teamInit = require('./app/routes/team');
 var team = new teamInit(Team, ObjectId);
 
 app.get('/teams', team.list);
@@ -73,7 +73,7 @@ app.post('/teams', team.create);
 app.get('/teams/:id'+idRegex, team.get);
 app.del('/teams/:id'+idRegex, team.delete);
 
-var gameInit = require('./routes/game');
+var gameInit = require('./app/routes/game');
 var game = new gameInit(Game, ObjectId, OutputFormat);
 
 var root = '/tournaments/:tournamentid'+idRegex+'/games';
@@ -89,7 +89,7 @@ app.del(root+'/:id'+idRegex, game.delete);
 // app.get('/games/new', game.new);
 // app.post('/games/new', game.create);
 
-var personInit = require('./routes/person');
+var personInit = require('./app/routes/person');
 var person = new personInit(Person, ObjectId, OutputFormat);
 
 http.createServer(app).listen(app.get('port'), function(){
