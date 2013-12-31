@@ -1,23 +1,43 @@
 {
-  "name": "tournament-management-api",
+  "name": "iqatournaments-api",
   "version": "0.0.1",
   "private": true,
+  "author": "Josh Kramer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jkjustjoshing/iqatournaments-api.git"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  },
   "scripts": {
-    "start": "node app.js"
+    "start": "node node_modules/grunt-cli/bin/grunt",
+    "test": "node node_modules/grunt-cli/bin/grunt test"
   },
   "devDependencies": {
-  "grunt": "~0.4.2",
-  "grunt-contrib-jshint": "~0.6.3",
-  "grunt-contrib-nodeunit": "~0.2.0",
-  "grunt-contrib-watch": "*",
-  "grunt-contrib-jasmine": "~0.5.1" 
+    "supertest": "latest",
+    "should": "latest",
+    "grunt-shell-spawn": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-nodemon": "latest",
+    "grunt-concurrent": "latest",
+    "grunt-mocha-test": "latest",
+    "load-grunt-tasks": "~0.1.0",
+    "time-grunt": "~0.1.1"
+    "frisby": "latest"
   },
   "dependencies": {
     "express": "3.4.7",
-    "jade": "*",
-    "mongodb": "*",
-    "mongoose": "*",
+    "jade": "latest",
+    "mongodb": "latest",
+    "mongoose": "latest",
+    "connect-mongo": "latest",
+    "connect-flash": "latest",
     "moment": "~2.5.0",
-    "frisby": "*"
+    "async": "latest",
+    "grunt": "latest",
+    "grunt-cli": "latest",
   }
 }

@@ -1,0 +1,7 @@
+{
+    "name": "iqatournaments-api",
+    "version": "0.0.1",
+    "dependencies": {
+        "json3": "~3.2.4"
+    }
+}
