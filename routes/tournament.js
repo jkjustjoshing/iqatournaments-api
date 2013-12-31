@@ -12,8 +12,19 @@ module.exports = function(moment, Tournament, ObjectId, OutputFormat){
 
   this.get = function(req, res){
     var id = req.route.params.id;
-    Tournament.findOne({_id: new ObjectId(id)}, function(err, tournament){
+    Tournament.findOne({_id: id}, function(err, tournament){
       if(!err){
+        return res.send(Tournament.format(tournament));
+      }else{
+        return res.send(OutputFormat.error(err));
+      }
+    });
+  };
+
+  this.details = function(req, res){
+    var id = req.route.params.id;
+    Tournament.findOne({_id: id}, function(err, tournament){
+      console.log(tournament);if(!err){
         return res.send(Tournament.format(tournament));
       }else{
         return res.send(OutputFormat.error(err));
@@ -40,6 +51,7 @@ module.exports = function(moment, Tournament, ObjectId, OutputFormat){
   this.create = function(req, res){
     console.log('create');
     var tournament = new Tournament({
+      _id: req.body.id,
       name: req.body.name,
       location: req.body.location,
       director: req.body.director,

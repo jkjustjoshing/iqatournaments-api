@@ -13,7 +13,7 @@ var OutputFormat = require('./utils/OutputFormat')
 // Database Connection
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
-var idRegex = '([a-fA-F0-9]{24})';
+var idRegex = '([a-zA-z0-9\-]{3,})';
 mongoose.connect('mongodb://localhost:27017/tournament_management');
 
 var ObjectId = mongoose.Types.ObjectId;
@@ -59,6 +59,7 @@ app.get('/', routes.index);
 app.get('/tournaments', tournament.list);
 app.post('/tournaments', tournament.create);
 app.get('/tournaments/:id'+idRegex, tournament.get);
+app.get('/tournaments/:id'+idRegex+'/details', tournament.details);
 app.del('/tournaments/:id'+idRegex, tournament.delete);
 //app.post('/tournaments/:id([a-fA-F0-9]{24})/update', tournament.patch);
 //app.get('/tournament/:id([a-fA-F0-9]{24})/update', tournament.update);

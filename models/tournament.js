@@ -1,6 +1,7 @@
 module.exports = function(mongoose, moment, Game){
   var TournamentSchema = new mongoose.Schema({
-    name: {type: String, required: true, unique: true},
+    _id: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
+    name: {type: String, required: true, unique: false},
     director: {type: String, required: true},
     location: {type: String, required: true},
     date: {type: String, required: true, default: moment().format('L')}
@@ -18,6 +19,18 @@ module.exports = function(mongoose, moment, Game){
     };
   };
 
+  var formatDetails = function(tournament){
+    return {
+      id: tournament._id || "",
+      name: tournament.name || "",
+      date: tournament.date || "",
+      director: tournament.director || "",
+      location: tournament.location || "",
+      teams: tournament.teams || [],
+      games: tournament.games || []
+    };
+  };
+
   Tournament.format = function(tournament){
     if(Array.isArray(tournament)){
       // Array of tournaments
@@ -31,6 +44,20 @@ module.exports = function(mongoose, moment, Game){
       return format(tournament);
     }
   };
+
+  Tournament.details = function(tournament){
+    if(Array.isArray(tournament)){
+      // Array of tournaments
+      var formatted = [];
+      for(var i = 0; i < tournament.length; ++i){
+        formatted[formatted.length] = formatDetails(tournament[i]);
+      }
+      return formatted;
+    }else{
+      // Single tournament
+      return formatdetails(tournament);
+    }
+  }
 
   Tournament.details = function(){
 
