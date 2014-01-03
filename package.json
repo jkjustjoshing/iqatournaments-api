@@ -23,7 +23,9 @@
     "grunt-contrib-jshint": "latest",
     "grunt-nodemon": "latest",
     "grunt-concurrent": "latest",
-    "grunt-jasmine-node": "latest",
+    "grunt-mocha-test": "latest",
+    "expect.js": "latest",
+    "supertest": "latest",
     "load-grunt-tasks": "~0.1.0",
     "time-grunt": "~0.1.1",
     "jasmine-node": "latest"
