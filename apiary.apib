@@ -8,6 +8,7 @@ Manage tournaments easily as a team, ref, or tournament director.
 Tournaments related resources of the **iqatournaments** API
 
 ## Tournaments Collection [/tournaments]
+
 ### List all Tournaments [GET]
 + Response 200 (application/json)
 
@@ -60,27 +61,9 @@ A single Tournament object with its top level data.
 + Parameters
     + id (required, string) ... The id of the requested tournament, case insensitive.
 
+
 ### Retrieve a Tournament [GET]
-
-+ Response 200 (application/json)
-    + Body
-
-            { 
-              "id": "worldcup7",
-              "name": "World Cup 7",
-              "location": "Myrtle Beach, SC",
-              "date": "04/05/2014",
-              "director": "Josh Kramer"
-            }
-
-
-### Remove a Tournament [DELETE]
-+ Response 204
-
-## Tournament Details [/tournaments/{id}/details]
 A single Tournament object with its top and second level data (Games and Teams)
-
-### Retrieve a Tournament [GET]
 
 + Parameters
     + id (required, string) ... The id of the requested tournament, case insensitive.
@@ -97,69 +80,187 @@ A single Tournament object with its top and second level data (Games and Teams)
                 "director": "Josh Kramer",
                 "teams": [
                     {
-                        "id": "900000000000000000000001",
+                        "id": "90000",
                         "name": "RIT Dark Marks"
                     },
                     {
-                        "id": "900000000000000000000002",
+                        "id": "90002",
                         "name": "Boston University"
                     },
                     {
-                        "id": "900000000000000000000003",
+                        "id": "90003",
                         "name": "U of R Thestrals"
                     },
                     {
-                        "id": "900000000000000000000013",
+                        "id": "90013",
                         "name": "NY Badassalisks"
                     }
                 ],
                 "games": [
                     {
-                        "id": "900000000000000000000004",
+                        "id": "90004",
                         "pitch": "1",
                         "startTime": "2014-04-09T11:20+05:00",
                         "headReferee": {
-                            "id": "400000000000000000000001",
+                            "id": "40001",
                             "name": "Jeff Sherman"
                         },
                          "snitch": {
-                            "id": "400000000000000000000011",
+                            "id": "40011",
                             "name": "Max Desmond"
                         },
-                        "teams": [
-                            {
-                                "id": "900000000000000000000003",
-                                "name": "U of R Thestrals"
-                            },
-                            {
-                                "id": "900000000000000000000002",
-                                "name": "Boston University"
-                            }
-                        ]
+                        "team1": {
+                            "id": "90003",
+                            "name": "U of R Thestrals"
+                        },
+                        "team2": {
+                            "id": "90002",
+                            "name": "Boston University"
+                        }
                     },
                     {
-                        "id": "900000000000000000000006",
+                        "id": "90006",
                         "pitch": "2",
                         "startTime": "2014-04-09T09:20+05:00",
                         "endTime": "2014-04-09T09:43+05:00",
                         "gameTime": "17:32",
                         "headReferee": {
-                            "id": "400000000000000000000002",
+                            "id": "40002",
                             "name": "Samy Mousa"
                         },
                         "snitch": {
-                            "id": "400000000000000000000011",
+                            "id": "400011",
+                            "name": "Max Desmond"
+                        },
+                        "team1": {
+                            "id": "90001",
+                            "name": "RIT Dark Marks",
+                            "score": 100,
+                            "snatch": true
+                        },
+                        "team2": {
+                            "id": "90002",
+                            "name": "Boston University",
+                            "score": 90,
+                            "snatch": false
+                        },
+                        "assistantReferees": [
+                            {
+                            "id": "40003",
+                            "name": "Josh Kramer"
+                        },
+                        {
+                            "id": "40004",
+                            "name": "Snow Woodcock"
+                        },
+                        {
+                            "id": "40005",
+                            "name": "Kyle Leslie"
+                        },
+                        {
+                            "id": "40006",
+                            "name": "John Goinn"
+                        }
+                        ]
+                    }
+                ]
+            }
+
+### Remove a Tournament [DELETE]
++ Response 204
+
+### Modify a Tournament [PATCH]
+Modify a single tournament. Only can modify the top level fields using this endpoint.
+To modify the teams and games use the /tournaments/{id}/teams and /tournaments/{id}/games endpoints.
+
++ Parameters
+    + id (required, string) ... The id of the requested tournament before the 
+request, case insensitive. If id is included in the PATCH data it will 
+change for future requests.
+
++ Request
+
+        {
+            "id": "world-cup-7",
+            "location": "Los Angeles, CA",
+            "date": "04/05/2015"
+        }
+
++ Response 200 (application/json)
+
+    + Body
+    
+            { 
+                "id": "world-cup-7",
+                "name": "World Cup 7",
+                "location": "Los Angeles, CA",
+                "date": "04/05/2015",
+                "director": "Josh Kramer",
+                "teams": [
+                    {
+                        "id": "90001",
+                        "name": "RIT Dark Marks"
+                    },
+                    {
+                        "id": "90002",
+                        "name": "Boston University"
+                    },
+                    {
+                        "id": "90003",
+                        "name": "U of R Thestrals"
+                    },
+                    {
+                        "id": "90013",
+                        "name": "NY Badassalisks"
+                    }
+                ],
+                "games": [
+                    {
+                        "id": "90004",
+                        "pitch": "1",
+                        "startTime": "2014-04-09T11:20+05:00",
+                        "headReferee": {
+                            "id": "40001",
+                            "name": "Jeff Sherman"
+                        },
+                         "snitch": {
+                            "id": "40011",
                             "name": "Max Desmond"
                         },
                         "teams": [
                             {
-                                "id": "900000000000000000000001",
+                                "id": "90003",
+                                "name": "U of R Thestrals"
+                            },
+                            {
+                                "id": "90002",
+                                "name": "Boston University"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "90006",
+                        "pitch": "2",
+                        "startTime": "2014-04-09T09:20+05:00",
+                        "endTime": "2014-04-09T09:43+05:00",
+                        "gameTime": "17:32",
+                        "headReferee": {
+                            "id": "40002",
+                            "name": "Samy Mousa"
+                        },
+                        "snitch": {
+                            "id": "40011",
+                            "name": "Max Desmond"
+                        },
+                        "teams": [
+                            {
+                                "id": "90001",
                                 "name": "RIT Dark Marks",
                                 "score": 100,
                                 "snatch": true
                             },
                             {
-                                "id": "900000000000000000000002",
+                                "id": "90002",
                                 "name": "Boston University",
                                 "score": 90,
                                 "snatch": false
@@ -167,105 +268,103 @@ A single Tournament object with its top and second level data (Games and Teams)
                         ],
                         "assistantReferees": [
                             {
-                            "id": "400000000000000000000003",
+                            "id": "40003",
                             "name": "Josh Kramer"
                         },
                         {
-                            "id": "400000000000000000000004",
+                            "id": "40004",
                             "name": "Snow Woodcock"
                         },
                         {
-                            "id": "400000000000000000000005",
+                            "id": "40005",
                             "name": "Kyle Leslie"
                         },
                         {
-                            "id": "400000000000000000000006",
+                            "id": "40006",
                             "name": "John Goinn"
                         }
                         ]
                     }
                 ]
             }
-            
+
+
 # Group Games
-Game related resources of the **Tournament Manager API**
+Game related resources of the **IQA Tournaments API**
 
 ## Games Collection [/tournaments/{id}/games]
 + Parameters
-    + id (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
+    + id (required, string) ... The id of the requested tournament before the 
+request, case insensitive. 
 
 ### List all Games [GET]
 + Response 200 (application/json)
     
         [
             {
-                "id": "900000000000000000000004",
+                "id": "90004",
                 "pitch": "1",
                 "startTime": "2014-04-09T11:20+05:00",
                 "headReferee": {
-                    "id": "400000000000000000000001",
+                    "id": "40001",
                     "name": "Jeff Sherman"
                 },
                  "snitch": {
-                    "id": "400000000000000000000011",
+                    "id": "40011",
                     "name": "Max Desmond"
                 },
-                "teams": [
-                    {
-                        "id": "900000000000000000000003",
-                        "name": "U of R Thestrals"
-                    },
-                    {
-                        "id": "900000000000000000000002",
-                        "name": "Boston University"
-                    }
-                ]
+                "team1": {
+                    "id": "90003",
+                    "name": "U of R Thestrals"
+                },
+                "team2": {
+                    "id": "90002",
+                    "name": "Boston University"
+                }
             },
             {
-                "id": "900000000000000000000006",
+                "id": "90006",
                 "pitch": "2",
                 "startTime": "2014-04-09T09:20+05:00",
                 "endTime": "2014-04-09T09:43+05:00",
                 "gameTime": "17:32",
                 "headReferee": {
-                    "id": "400000000000000000000002",
+                    "id": "40002",
                     "name": "Samy Mousa"
                 },
                 "snitch": {
-                    "id": "400000000000000000000011",
+                    "id": "40011",
                     "name": "Max Desmond"
                 },
-                "teams": [
-                    {
-                        "id": "900000000000000000000001",
-                        "name": "RIT Dark Marks"
-                        "score": 100
-                        "snatch": true
-                    },
-                    {
-                        "id": "900000000000000000000002",
-                        "name": "Boston University",
-                        "score": 90,
-                        "snatch": false
-                    }
-                ],
+                "team1": {
+                    "id": "90001",
+                    "name": "RIT Dark Marks"
+                    "score": 100
+                    "snatch": true
+                },
+                "team2": {
+                    "id": "90002",
+                    "name": "Boston University",
+                    "score": 90,
+                    "snatch": false
+                },
                 "assistantReferees": [
                     {
-                    "id": "400000000000000000000003",
+                    "id": "40003",
                     "name": "Josh Kramer"
-                },
-                {
-                    "id": "400000000000000000000004",
-                    "name": "Snow Woodcock"
-                },
-                {
-                    "id": "400000000000000000000005",
-                    "name": "Kyle Leslie"
-                },
-                {
-                    "id": "400000000000000000000006",
-                    "name": "John Goinn"
-                }
+                    },
+                    {
+                        "id": "40004",
+                        "name": "Snow Woodcock"
+                    },
+                    {
+                        "id": "40005",
+                        "name": "Kyle Leslie"
+                    },
+                    {
+                        "id": "40006",
+                        "name": "John Goinn"
+                    }
                 ]
             }
         ]
@@ -278,20 +377,20 @@ Game related resources of the **Tournament Manager API**
             "pitch": "1",
             "startTime": "2014-04-09T11:20+05:00",
             "headReferee": {
-                "id": "400000000000000000000001",
+                "id": "40001",
                 "name": "Jeff Sherman"
             },
              "snitch": {
-                "id": "400000000000000000000011",
+                "id": "40011",
                 "name": "Max Desmond"
             },
             "teams": [
                 {
-                    "id": "900000000000000000000003",
+                    "id": "90003",
                     "name": "U of R Thestrals"
                 },
                 {
-                    "id": "900000000000000000000002",
+                    "id": "90002",
                     "name": "Boston University"
                 }
             ]
@@ -300,24 +399,24 @@ Game related resources of the **Tournament Manager API**
 + Response 200 (application/json)
 
         {
-            "id": "900000000000000000000004",
+            "id": "90004",
             "pitch": "1",
             "startTime": "2014-04-09T11:20+05:00",
             "headReferee": {
-                "id": "400000000000000000000001",
+                "id": "40001",
                 "name": "Jeff Sherman"
             },
              "snitch": {
-                "id": "400000000000000000000011",
+                "id": "40011",
                 "name": "Max Desmond"
             },
             "teams": [
                 {
-                    "id": "900000000000000000000003",
+                    "id": "90003",
                     "name": "U of R Thestrals"
                 },
                 {
-                    "id": "900000000000000000000002",
+                    "id": "90002",
                     "name": "Boston University"
                 }
             ]
@@ -325,31 +424,31 @@ Game related resources of the **Tournament Manager API**
 
 ## Game [/tournaments/{tournamentid}/games/{gameid}]
 + Parameters
-    + tournamentid (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Tournament to perform action with. Has example value.
-    + gameid (required, string, `45af236dc25e2f5029add313`) ... Hexadecimal string `id` of the Game to perform action with. Has example value.
+    + tournamentid (required, string) ... The id of the requested tournament, case insensitive. 
+    + gameid (required, string) ... The id of the requested game
 
 ### Retrieve a Game [GET]
 + Response 200 (application/json)
     
         {
-            "id": "900000000000000000000004",
+            "id": "90004",
             "pitch": "1",
             "startTime": "2014-04-09T11:20+05:00",
             "headReferee": {
-                "id": "400000000000000000000001",
+                "id": "40001",
                 "name": "Jeff Sherman"
             },
              "snitch": {
-                "id": "400000000000000000000011",
+                "id": "40011",
                 "name": "Max Desmond"
             },
             "teams": [
                 {
-                    "id": "900000000000000000000003",
+                    "id": "90003",
                     "name": "U of R Thestrals"
                 },
                 {
-                    "id": "900000000000000000000002",
+                    "id": "90002",
                     "name": "Boston University"
                 }
             ]
@@ -358,30 +457,148 @@ Game related resources of the **Tournament Manager API**
 ### Remove a Came [DELETE]
 + Response 204
 
+### Modify a Game [PATCH]
+Modify a single game. Only can modify the top level fields using this endpoint.
+To modify assistant referees use /tournaments/{tournamentid}/games/{gameid}/assistantreferees.
+
++ Parameters
+    + tournamentid (required, string) ... The id of the requested tournament, case insensitive. 
+    + gameid (required, string) ... The id of the requested game before the request. If id is included in the PATCH data it will 
+change for future requests.
+
++ Request
+
+        {
+            "pitch": "5",
+            "startTime": "2014-04-09T12:00+05:00",
+            "headReferee": {
+                "id": "40002"
+            },
+            "team1": {
+                "id": "40018"
+            }
+        }
+
++ Response 200 (application/json)
+    
+        {
+            "id": "90004",
+            "pitch": "5",
+            "startTime": "2014-04-09T12:00+05:00",
+            "headReferee": {
+                "id": "40002",
+                "name": "Samy Mousa"
+            },
+             "snitch": {
+                "id": "40011",
+                "name": "Max Desmond"
+            },
+            "team1": {
+                "id": "90018",
+                "name": "Syracuse University"
+            },
+            "team2": {
+                "id": "90002",
+                "name": "Boston University"
+            }
+        }
+
+
+## Game [/tournaments/{tournamentid}/games/{gameid}/assistantreferees]
++ Parameters
+    + tournamentid (required, string) ... The id of the requested tournament, case insensitive. 
+    + gameid (required, string) ... The id of the requested game
+
+### Add a referee [POST]
+
++ Request
+
+        {
+            "id": "40011"
+        }
+        
++ Response 200
+
+        [
+            {
+            "id": "40003",
+            "name": "Josh Kramer"
+            },
+            {
+                "id": "40004",
+                "name": "Snow Woodcock"
+            },
+            {
+                "id": "40005",
+                "name": "Kyle Leslie"
+            },
+            {
+                "id": "40006",
+                "name": "John Goinn"
+            },
+            {
+                "id": "40011",
+                "name": "Max Desmond"
+            }
+        ]
+
+### Delete a referee [DELETE]
+
++ Request
+
+        {
+            "id": "40011"
+        }
+        
++ Response 200
+
+        [
+            {
+            "id": "40003",
+            "name": "Josh Kramer"
+            },
+            {
+                "id": "40004",
+                "name": "Snow Woodcock"
+            },
+            {
+                "id": "40005",
+                "name": "Kyle Leslie"
+            },
+            {
+                "id": "40006",
+                "name": "John Goinn"
+            }
+        ]
+    
+# Group Teams
+
 ## Teams Collection [/teams]
+Will be extended in the future to contain a roster and a captain. This will
+allow the API to return schedule conflicts for people possibly refereeing.
 
 ### List all Teams [GET]
 + Response 200 (application/json)
     
         [
             {
-                "id": "900000000000000000000001",
+                "id": "90001",
                 "name": "RIT Dark Marks"
             },
             {
-                "id": "900000000000000000000002",
+                "id": "90002",
                 "name": "Boston University"
             },
             {
-                "id": "900000000000000000000003",
+                "id": "90003",
                 "name": "U of R Thestrals"
             },
             {
-                "id": "900000000000000000000013",
+                "id": "90013",
                 "name": "NY Badassalisks"
             },
             {
-                "id": "900000000000000000000023",
+                "id": "90023",
                 "name": "Tufflepuffs"
             }
         ]
@@ -397,25 +614,57 @@ Game related resources of the **Tournament Manager API**
 + Response 200 (application/json)
 
         {
-            "id": "900000000000000000000001",
+            "id": "90001",
             "name": "RIT Dark Marks"
         }
 
 
 ## Team [/teams/{id}]
 + Parameters
-    + id (required, string, `45af236dc25e2f5029addf13`) ... Hexadecimal string `id` of the Team to perform action with. Has example value.
+    + id (required, string) ... `id` of the Team to perform action with.
 
 ### Retrieve a Team [GET]
 + Response 200 (application/json)
     
         {
-            "id": "900000000000000000000002",
+            "id": "90002",
             "name": "Boston University"
         }
 
-
 ### Remove a Team [DELETE]
++ Response 204
+
+# Group Persons
+
+## Persons [/persons]
+
+### Create a Person [POST]
++ Request
+
+        {
+            "name": "Adam Smith"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "id": "90023",
+            "name": "Adam Smith"
+        }
+
+## Person [/persons/{id}]
++ Parameters
+    + id (required, string) ... `id` of the Person to perform action with.
+
+### Retrieve a Person [GET]
++ Response 200 (application/json)
+    
+        {
+            "id": "90011",
+            "name": "Max Desmond"
+        }
+
+### Remove a Person [DELETE]
 + Response 204
 
 
