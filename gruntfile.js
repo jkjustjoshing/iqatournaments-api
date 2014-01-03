@@ -76,18 +76,24 @@ module.exports = function(grunt) {
                 logConcurrentOutput: true
             }
         },
-        mochaTest: {
-            options: {
-                reporter: 'spec'
-            },
-            src: ['test/**/*.js']
-        }
+        jasmine_node: {
+            specs: "./test/**/*.spec.js", // load only specs containing specNameMatcher
+            projectRoot: ".",
+            requirejs: false,
+            forceExit: true,
+            jUnit: {
+              report: false,
+              savePath : "./build/reports/jasmine/",
+              useDotNotation: true,
+              consolidate: true
+            }
+          }
     });
 
     //Load NPM tasks
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-jasmine-node');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-shell-spawn');
@@ -99,5 +105,5 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['jshint',  'concurrent']);
 
     //Test task.
-    grunt.registerTask('test', ['mochaTest']);
+    grunt.registerTask('test', ['jasmine_node']);
 };

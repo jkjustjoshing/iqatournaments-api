@@ -23,10 +23,10 @@
     "grunt-contrib-jshint": "latest",
     "grunt-nodemon": "latest",
     "grunt-concurrent": "latest",
-    "grunt-mocha-test": "latest",
+    "grunt-jasmine-node": "latest",
     "load-grunt-tasks": "~0.1.0",
     "time-grunt": "~0.1.1",
-    "frisby": "latest"
+    "jasmine-node": "latest"
   },
   "dependencies": {
     "express": "3.4.7",
