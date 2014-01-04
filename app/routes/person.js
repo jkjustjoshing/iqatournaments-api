@@ -1,6 +1,8 @@
-module.exports = function(Person, ObjectId, OutputFormat){
+var Person = require('../models/person');
 
-  this.list = function(req, res){
+var methods = {
+
+  list: function(req, res){
     Person.find(function(err, persons){
       if(!err){
         return res.send(persons);
@@ -8,9 +10,9 @@ module.exports = function(Person, ObjectId, OutputFormat){
         return console.log(err);
       }
     });
-  };
+  },
 
-  this.get = function(req, res){
+  get: function(req, res){
     var id = req.route.params.id;
     Person.find({_id: new ObjectId(id)}, function(err, person){
       if(!err){
@@ -19,9 +21,9 @@ module.exports = function(Person, ObjectId, OutputFormat){
         return res.send(OutputFormat.error(err));
       }
     });
-  };
+  },
 
-  this.delete = function(req, res){
+  delete: function(req, res){
     var id = req.route.params.id;
     Person.find({_id: new ObjectId(id)}, function(err, person){
       if(!err){
@@ -30,14 +32,9 @@ module.exports = function(Person, ObjectId, OutputFormat){
         return res.send(OutputFormat.error(err));
       }
     });
-  };
+  },
 
-  this.new = function(req, res){
-    console.log('new');
-    res.render('persons/new', {title: 'New Person'});
-  };
-
-  this.create = function(req, res){
+  post: function(req, res){
     console.log('create');
     var person = new Person({
       
@@ -50,20 +47,9 @@ module.exports = function(Person, ObjectId, OutputFormat){
         return res.send(OutputFormat.error(err));
       }
     });
-  };
+  },
 
-  this.update = function(req, res){
-    var id = req.route.params.id;
-    Person.find({_id: new ObjectId(id)}, function(err, person){
-      if(!err){
-        return res.render('persons/new', {title: 'Update Person', game: game});
-      }else{
-        return res.send(OutputFormat.error(err));
-      }
-    });
-  }
-
-  this.patch = function(req, res){
+  put: function(req, res){
     console.log(req.body);
     var id = req.route.params.id;
     var update = {};
@@ -77,7 +63,10 @@ module.exports = function(Person, ObjectId, OutputFormat){
         return res.send(OutputFormat.success({}));
       }
     );
+  }
 
-  };
+}
 
+module.exports = function(app) {
+  
 }

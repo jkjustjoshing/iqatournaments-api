@@ -1,64 +1,52 @@
-module.exports = function(moment, Tournament, ObjectId, OutputFormat){
+var Tournament = require('../models/tournament');
+var moment = require('moment');
 
-  this.list = function(req, res){
+var methods = {
+
+  list: function(req, res){
+
     Tournament.find(function(err, tournaments){
       if(!err){
         return res.send(Tournament.format(tournaments));
       }else{
-        return res.send(OutputFormat.error(err));
+        return res.send(err);
       }
     });
-  };
+  },
 
-  this.get = function(req, res){
+
+  get: function(req, res){
     var id = req.route.params.id;
     Tournament.findOne({_id: id}, function(err, tournament){
-      if(!err){
+      if(!err && tournament){
         return res.send(Tournament.format(tournament));
+      }else if(!tournament){
+        return res.send(404);
       }else{
         return res.send(err);
       }
     });
-  };
+  },
 
-  this.details = function(req, res){
+  delete: function(req, res){
     var id = req.route.params.id;
     Tournament.findOne({_id: id}, function(err, tournament){
-      console.log(tournament);if(!err){
-        return res.send(Tournament.format(tournament));
-      }else{
-        return res.send(OutputFormat.error(err));
-      }
-    });
-  };
-
-  this.delete = function(req, res){
-    var id = req.route.params.id;
-    Tournament.findOne({_id: new ObjectId(id)}, function(err, tournament){
       if(!err && tournament && tournament.remove()){
         return res.send(204);
       }else{
         return res.send(404);
       }
     });
-  };
+  },
 
-  this.new = function(req, res){
-    console.log('new');
-    res.render('tournaments/new', {title: 'New Tournament'});
-  };
-
-  this.create = function(req, res){
-    console.log('create');
+  post: function(req, res){
     var tournament = new Tournament({
       _id: req.body.id,
       name: req.body.name,
       location: req.body.location,
       director: req.body.director,
-      date: moment().format('L')
+      date: req.body.date
     });
-
-    console.log(req);
 
     tournament.save(function(err){
       if(!err){
@@ -67,14 +55,41 @@ module.exports = function(moment, Tournament, ObjectId, OutputFormat){
         return res.send(err);
       }
     });
-  };
+  },
 
-  this.patch = function(req, res){
+  put: function(req, res){
+    var id = req.route.params.id;
+    Tournament.findOne({_id: id}, function(err, tournament){
+      if(!err){
+        var updates = req.body;
 
-  };
+        for(var key in updates){
+          tournament[key] = updates[key];
+        }
 
-  this.update = function(req, res){
+        tournament.save(function(err) {
+          if(!err){
+            return res.send(Tournament.format(tournament));
+          }else{
+            return res.send(err);
+          }
+        });
 
-  };
+      }else{
+        return res.send(err);
+      }
+    });
+  }
+
+}
+
+
+module.exports = function(app){
+
+  app.get('/tournaments', methods.list);
+  app.post('/tournaments', methods.post);
+  app.get('/tournaments/:id'+app.get('idRegex'), methods.get);
+  app.del('/tournaments/:id'+app.get('idRegex'), methods.delete);
+  app.put('/tournaments/:id'+app.get('idRegex'), methods.put);
 
 }

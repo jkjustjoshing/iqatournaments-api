@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 
     shell: {
       mongodb: {
-        command: 'mongod'
+        command: 'mongod --dbpath ./data/'
       },
       test: {
         command: 'echo "foo"'

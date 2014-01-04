@@ -1,44 +1,41 @@
-module.exports = function(Team, ObjectId, OutputFormat){
+var Team = require('../models/team');
+var ObjectId = require('mongoose').Schema.ObjectId;
 
-  this.list = function(req, res){
+var methods = {
+
+  list: function(req, res){
     Team.find(function(err, teams){
       if(!err){
-        return res.send(teams);
+        return res.send(Team.format(teams));
       }else{
-        return console.log(err);
+        return res.send(err);
       }
     });
-  };
+  },
 
-  this.get = function(req, res){
+  get: function(req, res){
     var id = req.route.params.id;
     Team.find({_id: new ObjectId(id)}, function(err, team){
       if(!err){
-        return res.send(OutputFormat.success(team));
+        return res.send(Team.format(team));
       }else{
-        return res.send(OutputFormat.error(err));
+        return res.send(err);
       }
     });
-  };
+  },
 
-  this.delete = function(req, res){
+  delete: function(req, res){
     var id = req.route.params.id;
     Team.find({_id: new ObjectId(id)}, function(err, team){
       if(!err){
-        return res.send(OutputFormat.success(team));
+        return res.send(Team.format(team));
       }else{
-        return res.send(OutputFormat.error(err));
+        return res.send(err);
       }
     });
-  };
+  },
 
-  this.new = function(req, res){
-    console.log('new');
-    res.render('teams/new', {title: 'New Team'});
-  };
-
-  this.create = function(req, res){
-    console.log('create');
+  post: function(req, res){
     var team = new Team({
       teams: [
         {name: req.body.teams[0].name, score: parseInt(req.body.teams[0].score)},
@@ -50,25 +47,14 @@ module.exports = function(Team, ObjectId, OutputFormat){
 
     team.save(function(err){
       if(!err){
-        return res.send(OutputFormat.success({}));
+        return res.send(Team.format(team));
       }else {
-        return res.send(OutputFormat.error(err));
+        return res.send(err);
       }
     });
-  };
+  },
 
-  this.update = function(req, res){
-    var id = req.route.params.id;
-    Team.find({_id: new ObjectId(id)}, function(err, team){
-      if(!err){
-        return res.render('games/new', {title: 'Update Game', game: game});
-      }else{
-        return res.send(OutputFormat.error(err));
-      }
-    });
-  }
-
-  this.patch = function(req, res){
+  put: function(req, res){
     console.log(req.body);
     var id = req.route.params.id;
     var update = {};
@@ -79,10 +65,17 @@ module.exports = function(Team, ObjectId, OutputFormat){
       update,
       {},
       function(){
-        return res.send(OutputFormat.success({}));
+        return res.send(Team.format({}));
       }
     );
 
-  };
+  }
 
+}
+
+module.exports = function(app) {
+  app.get('/teams', methods.list);
+  app.post('/teams', methods.post);
+  app.get('/teams/:id'+app.get('idRegex'), methods.get);
+  app.del('/teams/:id'+app.get('idRegex'), methods.delete);
 }
