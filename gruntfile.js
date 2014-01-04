@@ -16,31 +16,16 @@ module.exports = function(grunt) {
     yeoman: yeomanConfig,
     pkg: grunt.file.readJSON('package.json'),
     watch: {
-      jade: {
-        files: ['app/views/**'],
-        options: {
-          livereload: true,
-        },
-      },
-      js: {
-        files: ['public/js/**', 'app/**/*.js'],
+      dev: {
+        files: ['server.js', 'app/**/*.js'],
         tasks: ['jshint'],
-        options: {
-          livereload: true,
-        },
       },
-      html: {
-        files: ['public/views/**'],
+      test: {
         options: {
-          livereload: true,
+          spawn: false
         },
-      },
-      css: {
-        files: ['app/styles/**', 'public/styles/**'],
-        tasks: ['compass'],
-        options: {
-          livereload: true
-        }
+        files: ['test/**/*.js', 'app/**/*.js'],
+        tasks: ['mochaTest']
       }
     },
     jshint: {
@@ -57,7 +42,7 @@ module.exports = function(grunt) {
           debug: true,
           delayTime: 1,
           env: {
-            PORT: 3000
+            PORT: 3000,
           },
           cwd: __dirname
         }
@@ -67,11 +52,19 @@ module.exports = function(grunt) {
     shell: {
       mongodb: {
         command: 'mongod'
+      },
+      test: {
+        command: 'echo "foo"'
       }
     },
 
     concurrent: {
-      tasks: ['shell', 'nodemon', 'watch'],
+      dev: {
+        tasks: ['shell:mongodb', 'nodemon', 'watch'],
+      },
+      test: {
+        tasks: ['shell:mongodb', 'mochaTest', 'watch:test'],
+      },
       options: {
         logConcurrentOutput: true
       }
@@ -85,6 +78,10 @@ module.exports = function(grunt) {
       }
     }
   });
+
+grunt.event.on('watch', function(action, filepath, target) {
+  grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
+});
 
   //Load NPM tasks
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -101,5 +98,5 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['jshint',  'concurrent']);
 
   //Test task.
-  grunt.registerTask('test', ['mochaTest']);
+  grunt.registerTask('test', ['concurrent:test']);
 };
