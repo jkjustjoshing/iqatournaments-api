@@ -15,7 +15,7 @@ var methods = {
 
   get: function(req, res){
     var id = req.route.params.id;
-    Tournament.findOne({_id: id}, function(err, tournament){
+    Tournament.findOne({id: id}, function(err, tournament){
       if(!err && tournament){
         return res.send(Tournament.details(tournament));
       }else if(!tournament){
@@ -28,7 +28,7 @@ var methods = {
 
   delete: function(req, res){
     var id = req.route.params.id;
-    Tournament.findOne({_id: id}, function(err, tournament){
+    Tournament.findOne({id: id}, function(err, tournament){
       if(!err && tournament && tournament.remove()){
         return res.send(204);
       }else{
@@ -39,7 +39,7 @@ var methods = {
 
   post: function(req, res){
     var tournament = new Tournament({
-      _id: req.body.id,
+      id: req.body.id,
       name: req.body.name,
       location: req.body.location,
       director: req.body.director,
@@ -57,26 +57,24 @@ var methods = {
 
   put: function(req, res){
     var id = req.route.params.id;
-    Tournament.findOne({_id: id}, function(err, tournament){
-      if(!err){
+    Tournament.findOne({id: id}, function(err, tournament){
+      if(!err && tournament){
         var updates = req.body;
 
         for(var key in updates){
-          if(key === 'id'){
-            tournament['_id'] = updates['id'];
-          }else{
-            tournament[key] = updates[key];
-          }
+          tournament[key] = updates[key];
         }
 
         tournament.save(function(err) {
           if(!err){
-            return res.send(Tournament.format(tournament));
+            return res.send(Tournament.details(tournament));
           }else{
-            return res.send(err);
+            return res.send(400, err);
           }
         });
 
+      }else if(!tournament){
+        return res.send(404);
       }else{
         return res.send(err);
       }

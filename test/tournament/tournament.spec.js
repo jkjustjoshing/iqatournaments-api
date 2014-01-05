@@ -1,20 +1,14 @@
-process.env.NODE_ENV = 'test';
 
+//////// Test setup code - in every test ////////
+process.env.NODE_ENV = 'test';
 var expect = require('expect.js');
 var app = require('../app/app');
 var request = require('supertest')(app);
-
-// Drop database before running tests
-
-if(process.env.NODE_ENV !== 'test'){
-  console.log("Not in test mode!");
-  process.exit(1);
-}
-
 after(function(done){
   app.get('db').connection.db.dropDatabase();
   done();
 });
+////////////////////////////////////////////////
 
 describe('With tournaments, ', function(){
 
@@ -128,6 +122,7 @@ describe('With single tournament', function(){
         done();
       });
   });
+
   describe('/tournaments/:id [GET]', function(){
 
     it('should not find a nonexistant post', function(done){
@@ -153,7 +148,7 @@ describe('With single tournament', function(){
             done();
           }
         });
-    })
+    });
 
   });
 
@@ -170,6 +165,124 @@ describe('With single tournament', function(){
         .del('/tournaments/'+tournament.id)
         .expect(404, done);
     });
+
+  });
+
+  describe('/tournaments/:id [PUT]', function(){
+
+    before(function(done){
+      request
+        .post('/tournaments')
+        .send(tournament)
+        .end(function(err, res){
+          done();
+        });
+    });
+
+
+    it('should modify the tournament', function(done){
+      
+      tournament.name = 'new different name';
+      tournament.date = '2022-12-22';
+
+      request
+        .put('/tournaments/'+tournament.id)
+        .send(tournament)
+        .expect(200)
+        .end(function(err, res){
+          if(err){
+            done(err);
+          }else{
+            var response = res.body;
+            expect(response.teams).to.eql([]);
+            expect(response.games).to.eql([]);
+            delete response.teams;
+            delete response.games;
+            expect(response).to.eql(tournament);
+            done();
+          }
+        });
+    });
+
+    it('should move the tournament to a new "id"', function(done){
+      var oldId = tournament.id;
+      tournament.id = 'some-new-tournament-id';
+
+      request
+        .put('/tournaments/'+oldId)
+        .send(tournament)
+        .expect(200)
+        .end(function(err, res){
+          if(err){
+            done(err);
+          }else{
+            var response = res.body;
+            expect(response.teams).to.eql([]);
+            expect(response.games).to.eql([]);
+            delete response.teams;
+            delete response.games;
+            expect(response).to.eql(tournament);
+
+            request.get('/tournaments/'+oldId)
+              .expect(404)
+              .end(function(err){
+                if(err) done(err);
+                else {
+                  request.get('/tournaments/'+tournament.id)
+                    .expect(200, done);
+                }
+              });
+
+          }
+        });
+
+    })
+
+  });
+
+  it('should not allow moving a tournament to an existing "id"', function(done){
+
+    var tournament1 = {
+      id: 'tournament1',
+      name: '',
+      director: '',
+      location: '',
+      date: '2012-02-02'
+    };
+    var tournament2 = {
+      id: 'tournament2',
+      name: '',
+      director: '',
+      location: '',
+      date: '2012-02-02'
+    };
+
+    request
+      .post('/tournaments')
+      .send(tournament1)
+      .end(function(err, res){
+        if(err){
+          done(err);
+        }else{
+
+          request
+            .post('/tournaments')
+            .send(tournament2)
+            .end(function(err, res){
+              if(err){
+                done(err);
+              }else{
+
+                // Actual test
+                request
+                  .put('/tournaments/'+tournament1.id)
+                  .send({id: 'tournament2'})
+                  .expect(400, done);
+
+              }
+            });
+        }
+      });
 
   });
 

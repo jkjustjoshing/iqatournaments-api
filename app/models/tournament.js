@@ -2,7 +2,7 @@ var mongoose = require('mongoose'),
     moment = require('moment');
 
 var TournamentSchema = new mongoose.Schema({
-  _id: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
+  id: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
   name: {type: String, required: true, unique: false},
   director: {type: String, required: true},
   location: {type: String, required: true},
@@ -13,7 +13,7 @@ var Tournament = mongoose.model('Tournament', TournamentSchema);
 
 var format = function(tournament){
   return {
-    id: tournament._id || "",
+    id: tournament.id || "",
     name: tournament.name || "",
     date: tournament.date || "",
     director: tournament.director || "",
@@ -23,7 +23,7 @@ var format = function(tournament){
 
 var formatDetails = function(tournament){
   return {
-    id: tournament._id || "",
+    id: tournament.id || "",
     name: tournament.name || "",
     date: tournament.date || "",
     director: tournament.director || "",
