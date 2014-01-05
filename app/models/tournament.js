@@ -6,7 +6,7 @@ var TournamentSchema = new mongoose.Schema({
   name: {type: String, required: true, unique: false},
   director: {type: String, required: true},
   location: {type: String, required: true},
-  date: {type: String, required: true, default: moment().format('L')}
+  date: {type: String, required: true, default: moment().format('YYYY-DD-MM'), match: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/}
 });
 
 var Tournament = mongoose.model('Tournament', TournamentSchema);
@@ -48,21 +48,7 @@ Tournament.format = function(tournament){
 };
 
 Tournament.details = function(tournament){
-  if(Array.isArray(tournament)){
-    // Array of tournaments
-    var formatted = [];
-    for(var i = 0; i < tournament.length; ++i){
-      formatted[formatted.length] = formatDetails(tournament[i]);
-    }
-    return formatted;
-  }else{
-    // Single tournament
-    return formatdetails(tournament);
-  }
+  return formatDetails(tournament);
 }
-
-Tournament.details = function(){
-
-};
 
 module.exports = Tournament;

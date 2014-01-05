@@ -4,7 +4,6 @@ var moment = require('moment');
 var methods = {
 
   list: function(req, res){
-
     Tournament.find(function(err, tournaments){
       if(!err){
         return res.send(Tournament.format(tournaments));
@@ -14,12 +13,11 @@ var methods = {
     });
   },
 
-
   get: function(req, res){
     var id = req.route.params.id;
     Tournament.findOne({_id: id}, function(err, tournament){
       if(!err && tournament){
-        return res.send(Tournament.format(tournament));
+        return res.send(Tournament.details(tournament));
       }else if(!tournament){
         return res.send(404);
       }else{
@@ -52,7 +50,7 @@ var methods = {
       if(!err){
         return res.send(201);
       }else {
-        return res.send(err);
+        return res.send(400, err);
       }
     });
   },
@@ -64,7 +62,11 @@ var methods = {
         var updates = req.body;
 
         for(var key in updates){
-          tournament[key] = updates[key];
+          if(key === 'id'){
+            tournament['_id'] = updates['id'];
+          }else{
+            tournament[key] = updates[key];
+          }
         }
 
         tournament.save(function(err) {
