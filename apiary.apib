@@ -634,14 +634,15 @@ allow the API to return schedule conflicts for people possibly refereeing.
 ### Remove a Team [DELETE]
 + Response 204
 
-# Group Persons
+# Group Person
 
-## Persons [/persons]
+## Person [/person]
 
 ### Create a Person [POST]
 + Request
 
         {
+            "id": "90023",
             "name": "Adam Smith"
         }
 
@@ -652,7 +653,7 @@ allow the API to return schedule conflicts for people possibly refereeing.
             "name": "Adam Smith"
         }
 
-## Person [/persons/{id}]
+## Person [/person/{id}]
 + Parameters
     + id (required, string) ... `id` of the Person to perform action with.
 
