@@ -2,7 +2,7 @@
 //////// Test setup code - in every test ////////
 process.env.NODE_ENV = 'test';
 var expect = require('expect.js');
-var app = require('../app/app');
+var app = require('../../app/app');
 var request = require('supertest')(app);
 after(function(done){
   app.get('db').connection.db.dropDatabase();
@@ -236,7 +236,7 @@ describe('With single tournament', function(){
           }
         });
 
-    })
+    });
 
   });
 
