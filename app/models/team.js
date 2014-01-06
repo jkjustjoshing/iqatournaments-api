@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
 
 var TeamSchema = new mongoose.Schema({
-
+  id: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
+  name: {type: String, required: true, unique: false},
+  captain: {type: String, required: true}
 });
 
 var Team = mongoose.model('Team', TeamSchema);

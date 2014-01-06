@@ -1,3 +1,5 @@
+var Game = require('../models/game');
+
 var methods = {
 
   list: function(req, res){
