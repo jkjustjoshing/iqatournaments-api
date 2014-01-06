@@ -8,8 +8,8 @@ var GameSchema = new mongoose.Schema({
   startTime: {type: String, required: false}, // regex 2014-04-09T11:20+05:00
   endTime: {type: String, required: false}, // regex 2014-04-09T11:20+05:00
   gameTime: {type: String, default: "20:00"}, // regex "dd:dd"
-  headReferee: {type: ObjectId, required: true, ref: 'Person'},
-  snitch: {type: ObjectId, required: true, ref: 'Person'},
+  headReferee: {type: ObjectId, ref: 'Person'},
+  snitch: {type: ObjectId, ref: 'Person'},
   teams: [{
     team: {type: ObjectId, required: true, ref: 'Team'},
     score: {type: Number, required: false},

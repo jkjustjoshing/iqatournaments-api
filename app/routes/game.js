@@ -28,7 +28,7 @@ var methods = {
         }
       });
     }
-    
+
   },
 
   get: function(req, res){
@@ -55,12 +55,14 @@ var methods = {
 
   post: function(req, res){
     var game = new Game({
-      teams: [
-        {name: req.body.teams[0].name, score: parseInt(req.body.teams[0].score)},
-        {name: req.body.teams[1].name, score: parseInt(req.body.teams[1].score)}
-      ],
-      duration: parseInt(req.body.duration),
-      headRef: req.body.headRef
+      tournament: req.body.tournament,
+      pitch: req.body.pitch,
+      startTime: req.body.startTime,
+      endTime: req.body.endTime,
+      gameTime: req.body.gameTime,
+      headReferee: req.body.headReferee,
+      snitch: req.body.snitch,
+      teams: req.body.teams
     });
 
     game.save(function(err){
@@ -79,16 +81,14 @@ var methods = {
 
 module.exports = function(app) {
 
-  
-  var root = '/tournaments/:tournamentid'+app.get('aliasRegex')+'/games';
-  app.get(root, methods.list);
-  app.post(root, methods.create);
-  app.get(root+'/:id'+app.get('idRegex'), methods.get);
-  app.del(root+'/:id'+app.get('idRegex'), methods.delete);
-  // app.get('/games', game.list);
-  // app.get('/game/:id'+idRegex, game.get);
-  // app.post('/game/:id([a-fA-F0-9]{24})/update', game.patch);
-  // app.get('/game/:id([a-fA-F0-9]{24})/update', game.update);
-  // app.get('/games/new', game.new);
-  // app.post('/games/new', game.create);
+
+  // var root = '/tournaments/:tournamentid'+app.get('aliasRegex')+'/games';
+  // app.get(root, methods.list);
+  // app.post(root, methods.create);
+  // app.get(root+'/:id'+app.get('idRegex'), methods.get);
+  // app.del(root+'/:id'+app.get('idRegex'), methods.delete);
+  app.get('/games', methods.list);
+  app.post('/games', methods.post);
+  app.get('/game/:id'+app.get('idRegex'), methods.get);
+  app.put('/game/:id'+app.get('idRegex')+'/update', methods.put);
 }
