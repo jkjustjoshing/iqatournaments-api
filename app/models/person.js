@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 
 var PersonSchema = new mongoose.Schema({
-  id: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
   name: {type: String, required: true}
 });
 
@@ -10,7 +9,7 @@ var Person = mongoose.model('Person', PersonSchema);
 
 var format = function(person){
   return {
-    id: person.id,
+    id: person._id,
     name: person.name
   };
 };

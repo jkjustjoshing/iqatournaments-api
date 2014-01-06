@@ -14,8 +14,8 @@ var methods = {
   },
 
   get: function(req, res){
-    var id = req.route.params.id;
-    Tournament.findOne({id: id}, function(err, tournament){
+    var alias = req.route.params.alias;
+    Tournament.findOne({alias: alias}, function(err, tournament){
       if(!err && tournament){
         return res.send(Tournament.details(tournament));
       }else if(!tournament){
@@ -27,8 +27,8 @@ var methods = {
   },
 
   delete: function(req, res){
-    var id = req.route.params.id;
-    Tournament.findOne({id: id}, function(err, tournament){
+    var alias = req.route.params.alias;
+    Tournament.findOne({alias: alias}, function(err, tournament){
       if(!err && tournament && tournament.remove()){
         return res.send(204);
       }else{
@@ -39,7 +39,7 @@ var methods = {
 
   post: function(req, res){
     var tournament = new Tournament({
-      id: req.body.id,
+      alias: req.body.alias,
       name: req.body.name,
       location: req.body.location,
       director: req.body.director,
@@ -56,8 +56,8 @@ var methods = {
   },
 
   put: function(req, res){
-    var id = req.route.params.id;
-    Tournament.findOne({id: id}, function(err, tournament){
+    var alias = req.route.params.alias;
+    Tournament.findOne({alias: alias}, function(err, tournament){
       if(!err && tournament){
         var updates = req.body;
 
@@ -88,8 +88,8 @@ module.exports = function(app){
 
   app.get('/tournaments', methods.list);
   app.post('/tournaments', methods.post);
-  app.get('/tournaments/:id'+app.get('idRegex'), methods.get);
-  app.del('/tournaments/:id'+app.get('idRegex'), methods.delete);
-  app.put('/tournaments/:id'+app.get('idRegex'), methods.put);
+  app.get('/tournaments/:alias'+app.get('aliasRegex'), methods.get);
+  app.del('/tournaments/:alias'+app.get('aliasRegex'), methods.delete);
+  app.put('/tournaments/:alias'+app.get('aliasRegex'), methods.put);
 
 }

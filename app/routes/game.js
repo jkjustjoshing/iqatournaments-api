@@ -1,15 +1,34 @@
 var Game = require('../models/game');
-
+var Tournament = require('../models/tournament');
 var methods = {
 
   list: function(req, res){
-    Game.find(function(err, games){
-      if(!err){
-        return res.send(games);
-      }else{
-        return console.log(err);
-      }
-    });
+    if(req.route.params.tournamentid){
+      Tournament.findOne({alias: req.route.params.tournamentid}, function(err, tournament){
+        if(!err && tournament){
+          Game.find({tournament: tournament._id}, function(err, games){
+            if(!err){
+              return res.send(Game.format(games));
+            }else{
+              return res.send(500, err);
+            }
+          });
+        }else if(!tournament){
+          return res.send(404);
+        }else{
+          return res.send(500, err);
+        }
+      });
+    }else{
+      Game.find(function(err, games){
+        if(!err){
+          return res.send(Game.format(games));
+        }else{
+          return res.send(500, err);
+        }
+      });
+    }
+    
   },
 
   get: function(req, res){
@@ -34,13 +53,7 @@ var methods = {
     });
   },
 
-  new: function(req, res){
-    console.log('new');
-    res.render('games/new', {title: 'New Game'});
-  },
-
-  create: function(req, res){
-    console.log('create');
+  post: function(req, res){
     var game = new Game({
       teams: [
         {name: req.body.teams[0].name, score: parseInt(req.body.teams[0].score)},
@@ -59,40 +72,15 @@ var methods = {
     });
   },
 
-  update: function(req, res){
-    var id = req.route.params.id;
-    Game.find({_id: new ObjectId(id)}, function(err, game){
-      if(!err){
-        return res.render('games/new', {title: 'Update Game', game: game});
-      }else{
-        return res.send(OutputFormat.error(err));
-      }
-    });
-  },
-
-  patch: function(req, res){
-    console.log(req.body);
-    var id = req.route.params.id;
-    var update = {};
-    
-
-    Game.update(
-      {_id: new ObjectId(id)},
-      update,
-      {},
-      function(){
-        return res.send(OutputFormat.success({}));
-      }
-    );
-
+  put: function(req, res){
   }
 
-}
+};
 
 module.exports = function(app) {
 
   
-  var root = '/tournaments/:tournamentid'+app.get('idRegex')+'/games';
+  var root = '/tournaments/:tournamentid'+app.get('aliasRegex')+'/games';
   app.get(root, methods.list);
   app.post(root, methods.create);
   app.get(root+'/:id'+app.get('idRegex'), methods.get);

@@ -1,16 +1,21 @@
 var mongoose = require('mongoose');
+var Person = require('./person');
 
 var TeamSchema = new mongoose.Schema({
-  id: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
+  alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
   name: {type: String, required: true, unique: false},
-  captain: {type: String, required: true}
+  captain: {type: mongoose.Schema.ObjectId, ref: 'Person'}
 });
 
 var Team = mongoose.model('Team', TeamSchema);
 
 
-var format = function(game){
-  return game;
+var format = function(team){
+  return {
+    name: team.name,
+    alias: team.alias,
+    captain: Person.format(team.captain)
+  };
 };
 
 Team.format = function(team){

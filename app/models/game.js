@@ -11,7 +11,7 @@ var GameSchema = new mongoose.Schema({
   headReferee: {type: ObjectId, required: true, ref: 'Person'},
   snitch: {type: ObjectId, required: true, ref: 'Person'},
   teams: [{
-    id: {type: ObjectId, required: true, ref: 'Team'},
+    team: {type: ObjectId, required: true, ref: 'Team'},
     score: {type: Number, required: false},
     snatch: {type: Boolean, required: false}
   }],
