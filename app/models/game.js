@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Person = require('./person');
+var Team = require('./team');
 var ObjectId = mongoose.Schema.ObjectId;
 
 var GameSchema = new mongoose.Schema({
@@ -24,14 +25,28 @@ var Game = mongoose.model('Game', GameSchema);
 
 
 var format = function(game){
-  return {
+  var format = {
+    id: game._id,
     tournament: game.tournament,
     pitch: game.pitch,
-    id: game._id,
     assistantReferees: Person.format(game.assistantReferees),
-    teams: game.teams,
     headReferee: Person.format(game.headReferee)
   };
+
+  console.log(game.teams);
+
+  var teams = [];
+  for(var i = 0; i < game.teams.length; ++i){
+    teams[i] = {
+      score: game.teams[i].score,
+      snatch: game.teams[i].snatch
+    };
+    teams[i].team = Team.format(game.teams[i].team);
+  }
+  console.log(teams);
+  format.teams = teams;
+
+  return format;
 };
 
 Game.format = function(game){

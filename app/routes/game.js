@@ -1,13 +1,16 @@
 var Game = require('../models/game');
 var Tournament = require('../models/tournament');
 var Person = require('../models/person');
+
+var populate = ['headReferee', 'assistantReferees', 'teams.team', {path: 'teams.team', model: 'Team'}];
+
 var methods = {
 
   list: function(req, res){
     if(req.route.params.tournamentid){
       Tournament.findOne({alias: req.route.params.tournamentid}, function(err, tournament){
         if(!err && tournament){
-          Game.find({tournament: tournament._id}, function(err, games){
+          Game.find({tournament: tournament._id}).populate(populate).exec(function(err, games){
             if(!err){
               return res.send(Game.format(games));
             }else{
@@ -21,7 +24,7 @@ var methods = {
         }
       });
     }else{
-      Game.find().populate(['headReferee', 'assistantReferees']).exec(function(err, games){
+      Game.find().populate(populate).exec(function(err, games){
         if(!err){
           return res.send(Game.format(games));
         }else{
@@ -34,7 +37,7 @@ var methods = {
 
   get: function(req, res){
     var id = req.route.params.id;
-    Game.findOne({_id: id}).populate('headReferee').exec(function(err, game){
+    Game.findOne({_id: id}).populate(populate).exec(function(err, game){
       if(!err && game){
         return res.send(Game.format(game));
       }else if(!game){
@@ -57,22 +60,41 @@ var methods = {
   },
 
   post: function(req, res){
-    var game = new Game({
-      tournament: req.body.tournament,
+    console.log(req.body);
+
+    var newGame = {
       pitch: req.body.pitch,
       startTime: req.body.startTime,
       endTime: req.body.endTime,
       gameTime: req.body.gameTime,
-      headReferee: req.body.headReferee,
-      snitch: req.body.snitch,
-      teams: req.body.teams
-    });
+    };
+
+    if(req.body.tournament){
+      newGame.tournament = req.body.tournament.id || req.body.tournament;
+    }
+    if(req.body.headReferee){
+      newGame.headReferee = req.body.headReferee.id || req.body.headReferee;
+    }
+    if(req.body.snitch){
+      newGame.snitch = req.body.snitch.id || req.body.snitch;
+    }
+    if(req.body.teams){
+      var arr = [];
+      for(var i = 0; i < req.body.teams.length; ++i){
+        arr[arr.length] = {team: req.body.teams[i]};
+      }
+      newGame.teams = arr;
+    }
+
+console.log(newGame);
+
+    var game = new Game(newGame);
 
     game.save(function(err){
       if(!err){
         return res.send(201);
       }else {
-        return res.send(500);
+        return res.send(500, err);
       }
     });
   },
@@ -123,5 +145,11 @@ module.exports = function(app) {
   app.post('/games', methods.post);
   app.get('/games/:id'+app.get('idRegex'), methods.get);
   app.put('/games/:id'+app.get('idRegex'), methods.put);
+  
+  // Assistant Referees
   app.post('/games/:id'+app.get('idRegex')+'/assistantReferees', methods.postAssistantRefs);
+  
+  // Teams
+  // app.post('/games/:id'+app.get('idRegex')+'/teams', methods.postTeams);
+  // app.post('/games/:id'+app.get('idRegex')+'/teams', methods.postTeams);
 }
