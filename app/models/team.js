@@ -12,6 +12,7 @@ var Team = mongoose.model('Team', TeamSchema);
 
 var format = function(team){
   return {
+    id: team._id,
     name: team.name,
     alias: team.alias,
     captain: Person.format(team.captain)

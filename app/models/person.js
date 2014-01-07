@@ -8,10 +8,14 @@ var Person = mongoose.model('Person', PersonSchema);
 
 
 var format = function(person){
-  return {
-    id: person._id,
-    name: person.name
-  };
+  if(person){
+    return {
+      id: person._id,
+      name: person.name
+    };
+  }else{
+    return {};
+  }
 };
 
 Person.format = function(person){
