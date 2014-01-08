@@ -1,4 +1,4 @@
-var Game = require('../models/game');
+var Game = require('../models/game/game');
 var Tournament = require('../models/tournament');
 var Person = require('../models/person');
 var _ = require('underscore');

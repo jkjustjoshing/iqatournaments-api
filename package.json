@@ -41,6 +41,7 @@
     "async": "latest",
     "grunt": "latest",
     "grunt-cli": "latest",
-    "underscore": "latest"
+    "underscore": "latest",
+    "socket.io": "latest"
   }
 }
