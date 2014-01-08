@@ -1,6 +1,9 @@
 var Game = require('../models/game');
 var Tournament = require('../models/tournament');
 var Person = require('../models/person');
+var _ = require('underscore');
+var ObjectId = require('mongoose').Schema.ObjectId;
+
 
 var populate = ['headReferee', 'assistantReferees', 'teams.team', {path: 'teams.team', model: 'Team'}];
 
@@ -60,8 +63,6 @@ var methods = {
   },
 
   post: function(req, res){
-    console.log(req.body);
-
     var newGame = {
       pitch: req.body.pitch,
       startTime: req.body.startTime,
@@ -79,14 +80,16 @@ var methods = {
       newGame.snitch = req.body.snitch.id || req.body.snitch;
     }
     if(req.body.teams){
-      var arr = [];
-      for(var i = 0; i < req.body.teams.length; ++i){
-        arr[arr.length] = {team: req.body.teams[i]};
-      }
-      newGame.teams = arr;
+      newGame.teams = [];
+      _(req.body.teams).each(function(team){
+        newGame.teams.push({team: team});
+      });
     }
-
-console.log(newGame);
+    if(_.isArray(req.body.assistantReferee)){
+      newGame.assistantReferees = req.body.assistantReferees;
+    }else{
+      return res.send(500, {error: 'assistantReferees must be array'});
+    }
 
     var game = new Game(newGame);
 
@@ -102,33 +105,139 @@ console.log(newGame);
   put: function(req, res){
   },
 
-  postAssistantRefs: function(req, res){
-    Person.findOne({_id: req.body.id}, function(err, person){
-      if(!err && person){
-        console.log(req.route.params.id);
-        Game.findOne({_id: req.route.params.id}, function(err, game){
-          if(!err && game){
-            game.assistantReferees.push(person);
+  assistantRefs: {
 
-            game.save(function(err){
-              if(!err){
-                return res.send(200);
-              }else{
-                return res.send(500, err);
-              }
-            });
-          }else if(!game){
-            return res.send(404);
-          }else{
-            return res.send(500, err);
-          }
-        });
-      }else if(!person){
-        return res.send(404);
+    post: function(req, res){
+      Person.findOne({_id: req.body.id}, function(err, person){
+        if(!err && person){
+
+          Game.findOne({_id: req.route.params.id}, function(err, game){
+            if(!err && game){
+              game.assistantReferees.push(person);
+
+              game.save(function(err){
+                if(!err){
+                  return res.send(200);
+                }else{
+                  return res.send(500, err);
+                }
+              });
+            }else if(!game){
+              return res.send(404);
+            }else{
+              return res.send(500, err);
+            }
+          });
+        }else if(!person){
+          return res.send(404);
+        }else{
+          return res.send(500, err);
+        }
+      });
+    },
+    delete: function(req, res){
+
+      var id = req.route.params.id;
+      Game.findOne({_id: id}, function(err, game){
+        if(!err && game){
+
+          game.assistantReferees = 
+               _.chain(game.assistantReferees).map(function(id){
+                return id.toString();
+              }).difference(req.body.id).value();
+
+          game.save(function(err){
+            if(!err){
+              return res.send(200);
+            }else{
+              return res.send(500, err);
+            }
+          });
+
+        }else if(!game){
+          return res.send(404);
+        }else{
+          return res.send(500, err);
+        }
+      });
+
+    }
+  },
+
+  teams: {
+    post: function(req, res){
+
+      return res.send(500, 'NOT YET IMPLEMENTED.');
+
+      var searchObj;
+
+      if(req.body.alias){
+        searchObj = {alias: req.body.alias};
+      }else if(req.body.id){
+        searchObj = {_id: req.body.id};
       }else{
-        return res.send(500, err);
+        return res.send(400);
       }
-    });
+
+      Team.findOne(searchObj, function(err, team){
+        if(!err && team){
+
+          Game.findOne({_id: req.route.params.id}, function(err, game){
+            if(!err && game){
+              // game.assistantReferees.push(person);
+
+              // game.save(function(err){
+              //   if(!err){
+              //     return res.send(200);
+              //   }else{
+              //     return res.send(500, err);
+              //   }
+              // });
+            }else if(!game){
+              return res.send(404, {error: 'Game not found.'});
+            }else{
+              return res.send(500, err);
+            }
+          });
+        }else if(!team){
+          return res.send(404, {error: 'Team not found.'});
+        }else{
+          return res.send(500, err);
+        }
+      });
+    },
+    delete: function(req, res){
+      return res.send(500, 'NOT YET IMPLEMENTED.');
+      // var id = req.route.params.id;
+
+      // if(! _.isArray(req.body.id) ){
+      //   return res.send(400);
+      // }
+
+      // Game.findOne({_id: id}, function(err, game){
+      //   if(!err && game){
+
+      //     game.teams = 
+      //          _.chain(game.teams).map(function(id){
+      //           return id.toString();
+      //         }).difference(req.body.id).value();
+
+      //     game.save(function(err){
+      //       if(!err){
+      //         return res.send(200);
+      //       }else{
+      //         return res.send(500, err);
+      //       }
+      //     });
+
+      //   }else if(!game){
+      //     return res.send(404);
+      //   }else{
+      //     return res.send(500, err);
+      //   }
+      // });
+
+    }
   }
 
 };
@@ -147,9 +256,10 @@ module.exports = function(app) {
   app.put('/games/:id'+app.get('idRegex'), methods.put);
   
   // Assistant Referees
-  app.post('/games/:id'+app.get('idRegex')+'/assistantReferees', methods.postAssistantRefs);
+  app.post('/games/:id'+app.get('idRegex')+'/assistantReferees', methods.assistantRefs.post);
+  app.del('/games/:id'+app.get('idRegex')+'/assistantReferees', methods.assistantRefs.delete);
   
   // Teams
-  // app.post('/games/:id'+app.get('idRegex')+'/teams', methods.postTeams);
-  // app.post('/games/:id'+app.get('idRegex')+'/teams', methods.postTeams);
+  app.post('/games/:id'+app.get('idRegex')+'/teams', methods.teams.post);
+  app.post('/games/:id'+app.get('idRegex')+'/teams', methods.teams.delete);
 }
