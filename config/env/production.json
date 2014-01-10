@@ -1,5 +1,6 @@
 {
     "db": "mongodb://localhost/iqatournaments",
+    "cookieSecret": "random-production-secret-but don't ship this",
     "app": {
         "name": "IQA Tournaments API - A tournament management API for Quidditch"
     }

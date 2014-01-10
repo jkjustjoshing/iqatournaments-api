@@ -4,6 +4,10 @@ var PersonSchema = new mongoose.Schema({
   name: {type: String, required: true}
 });
 
+PersonSchema.methods.verifyPassword = function(passwordToCheck) {
+  return true;
+};
+
 var Person = mongoose.model('Person', PersonSchema);
 
 

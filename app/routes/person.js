@@ -1,7 +1,7 @@
 var Person = require('../models/person');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.ObjectId;
-
+var auth = require('../auth');
 
 var methods = {
 
@@ -24,6 +24,14 @@ var methods = {
         return res.send(500, err);
       }
     });
+  },
+
+  me: function(req, res){
+    if(!req.user){
+      return res.send(403);
+    }else{
+      return res.send(Person.format(req.user));
+    }
   },
 
   delete: function(req, res){
@@ -78,6 +86,7 @@ var methods = {
 }
 
 module.exports = function(app) {
+  app.get('/me', auth.restrict, methods.me);
   app.get('/person/list', methods.list);
   app.post('/person', methods.post);
   app.get('/person/:id'+app.get('idRegex'), methods.get);

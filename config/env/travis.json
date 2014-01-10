@@ -1,6 +1,7 @@
 {
     "db": "mongodb://localhost/iqatournaments-travis",
     "port": 3001,
+    "cookieSecret": "random-travis-secret",
     "app": {
         "name": "IQA Tournaments API - A tournament management API for Quidditch - Test on travis"
     }

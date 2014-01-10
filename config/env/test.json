@@ -1,6 +1,7 @@
 {
     "db": "mongodb://localhost/iqatournaments-test",
     "port": 3001,
+    "cookieSecret": "random-test-secret",
     "app": {
         "name": "IQA Tournaments API - A tournament management API for Quidditch - Test"
     }
