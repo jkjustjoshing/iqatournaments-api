@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var q = require('q');
 
 var PersonSchema = new mongoose.Schema({
   name: {type: String, required: true}
@@ -12,7 +13,6 @@ var Person = mongoose.model('Person', PersonSchema);
 
 
 var format = function(person){
-  console.log('person', person);
   if(person && person.name){
     return {
       id: person._id,
@@ -36,6 +36,25 @@ Person.format = function(person){
     return format(person);
   }
 };
+
+Person.getId = function(id){
+
+  var deferred = q.defer();
+
+  Person.findOne({_id: id}, function(err, person){
+    console.log('personn', person);
+    if(!err && person){
+      console.log(person);
+      deferred.resolve(person);
+    }else if(!person){
+      deferred.reject({status: 404});
+    }else{
+      return deferred.reject({status: 500, err: err});
+    }
+  });
+
+  return deferred.promise;
+}
 
 
 module.exports = Person;

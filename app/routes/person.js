@@ -17,13 +17,14 @@ var methods = {
 
   get: function(req, res){
     var id = req.route.params.id;
-    Person.findOne({_id: id}, function(err, person){
-      if(!err){
+    Person.getId(id).then(
+      function(person){
         return res.send(Person.format(person));
-      }else{
-        return res.send(500, err);
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
       }
-    });
+      );
   },
 
   me: function(req, res){
@@ -63,8 +64,8 @@ var methods = {
   put: function(req, res){
     var id = req.route.params.id;
 
-    Person.findOne({_id: id}, function(err, person){
-      if(!err && person){
+    Person.getId(id).then(
+      function(person){
         person.name = req.body.name;
 
         person.save(function(err) {
@@ -74,13 +75,12 @@ var methods = {
             return res.send(400, err);
           }
         });
-
-      }else if(!person){
-        return res.send(404);
-      }else{
-        return res.send(err);
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
       }
-    });
+      );
+
   }
 
 }
