@@ -16,31 +16,32 @@
     "test": "node node_modules/grunt-cli/bin/grunt test"
   },
   "devDependencies": {
-    "supertest": "latest",
-    "should": "latest",
-    "grunt-shell-spawn": "latest",
-    "grunt-contrib-watch": "latest",
-    "grunt-contrib-jshint": "latest",
-    "grunt-nodemon": "latest",
-    "grunt-concurrent": "latest",
-    "grunt-mocha-test": "latest",
-    "expect.js": "latest",
-    "supertest": "latest",
+    "supertest": "~0.8.3",
+    "should": "~2.1.1",
+    "grunt-shell-spawn": "~0.3.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-nodemon": "~0.1.2",
+    "grunt-concurrent": "~0.4.2",
+    "grunt-mocha-test": "~0.8.1",
+    "expect.js": "~0.2.0",
+    "supertest": "~0.8.3",
     "load-grunt-tasks": "~0.1.0",
     "time-grunt": "~0.1.1",
-    "jasmine-node": "latest"
+    "jasmine-node": "~1.12.0"
   },
   "dependencies": {
     "express": "3.4.7",
-    "jade": "latest",
-    "mongodb": "latest",
-    "mongoose": "latest",
-    "connect-mongo": "latest",
-    "connect-flash": "latest",
+    "mongodb": "~1.3.23",
+    "mongoose": "~3.8.4",
+    "connect-mongo": "~0.4.0",
+    "connect-flash": "~0.1.1",
     "moment": "~2.5.0",
-    "async": "latest",
-    "grunt": "latest",
-    "grunt-cli": "latest",
-    "underscore": "latest"
+    "async": "~0.2.9",
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.11",
+    "underscore": "~1.5.2",
+    "passport": "~0.1.18",
+    "passport-local": "~0.1.6"
   }
 }
