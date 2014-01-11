@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Person = require('./person');
 var Team = require('./team');
 var ObjectId = mongoose.Schema.ObjectId;
+var q = require('q');
 
 var GameSchema = new mongoose.Schema({
   tournament: {type: ObjectId, required: true, ref: 'Tournament'},
@@ -20,6 +21,8 @@ var GameSchema = new mongoose.Schema({
     {type: ObjectId, required: false, ref: 'Person'}
   ]
 });
+
+var populate = ['headReferee', 'assistantReferees', 'teams.team', {path: 'teams.team', model: 'Team'}];
 
 var Game = mongoose.model('Game', GameSchema);
 
@@ -62,6 +65,41 @@ Game.format = function(game){
     return format(game);
   }
 };
+
+Game.getOne = function(search){
+  var deferred = q.defer();
+
+  Game.get(search).then(
+    function(result){
+      if(result.length === 0){
+        deferred.reject({status: 404});
+      }else{
+        deferred.resolve(result[0]);
+      }
+    },
+    function(errObj){
+      deferred.reject(errObj);
+    }
+    );
+
+  return deferred.promise;
+}
+
+Game.get = function(search){
+
+  var deferred = q.defer();
+  Game.find(search).populate(populate).exec(function(err, result){
+    if(!err && result){
+      deferred.resolve(result);
+    }else if(!result){
+      deferred.reject({status: 404});
+    }else{
+      deferred.reject({status: 500, err: err});
+    }
+  });
+
+  return deferred.promise;
+}
 
 
 

@@ -1,10 +1,12 @@
-var mongoose = require('mongoose'),
-    moment = require('moment');
+var mongoose = require('mongoose');
+var moment = require('moment');
+var q = require('q');
+var Person = require('./person');
 
 var TournamentSchema = new mongoose.Schema({
-  alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
+  alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,23}$/},
   name: {type: String, required: true, unique: false},
-  director: {type: String, required: true},
+  director: {type: mongoose.Schema.ObjectId, ref: 'Person'},
   location: {type: String, required: true},
   date: {type: String, required: true, default: moment().format('YYYY-DD-MM'), match: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/}
 });
@@ -17,7 +19,7 @@ var format = function(tournament){
     alias: tournament.alias || "",
     name: tournament.name || "",
     date: tournament.date || "",
-    director: tournament.director || "",
+    director: Person.format(tournament.director),
     location: tournament.location || ""
   };
 };
@@ -28,7 +30,7 @@ var formatDetails = function(tournament){
     alias: tournament.alias || "",
     name: tournament.name || "",
     date: tournament.date || "",
-    director: tournament.director || "",
+    director: Person.format(tournament.director),
     location: tournament.location || "",
     teams: tournament.teams || [],
     games: tournament.games || []
@@ -51,6 +53,41 @@ Tournament.format = function(tournament){
 
 Tournament.details = function(tournament){
   return formatDetails(tournament);
+}
+
+Tournament.getOne = function(search){
+  var deferred = q.defer();
+
+  Tournament.get(search).then(
+    function(result){
+      if(result.length === 0){
+        deferred.reject({status: 404});
+      }else{
+        deferred.resolve(result[0]);
+      }
+    },
+    function(errObj){
+      deferred.reject(errObj);
+    }
+    );
+
+  return deferred.promise;
+}
+
+Tournament.get = function(search){
+
+  var deferred = q.defer();
+  Tournament.find(search).populate('director').exec(function(err, result){
+    if(!err && result){
+      deferred.resolve(result);
+    }else if(!result){
+      deferred.reject({status: 404});
+    }else{
+      deferred.reject({status: 500, err: err});
+    }
+  });
+
+  return deferred.promise;
 }
 
 module.exports = Tournament;

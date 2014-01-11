@@ -4,26 +4,30 @@ var moment = require('moment');
 var methods = {
 
   list: function(req, res){
-    Tournament.find(function(err, tournaments){
-      if(!err){
+    Tournament.get().then(
+      function(tournaments){
         return res.send(Tournament.format(tournaments));
-      }else{
-        return res.send(err);
-      }
-    });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   get: function(req, res){
-    var alias = req.route.params.alias;
-    Tournament.findOne({alias: alias}, function(err, tournament){
-      if(!err && tournament){
+    var searchObject;
+    if(req.route.params.alias){
+      searchObject = {alias: req.route.params.alias};
+    }else if(req.route.params.id){
+      searchObject = {_id: req.route.params.id};
+    }
+
+    Tournament.getOne(searchObject).then(
+      function(tournament){
         return res.send(Tournament.details(tournament));
-      }else if(!tournament){
-        return res.send(404);
-      }else{
-        return res.send(err);
-      }
-    });
+      }, 
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   delete: function(req, res){
@@ -59,8 +63,6 @@ var methods = {
     var alias = req.route.params.alias;
     Tournament.findOne({alias: alias}, function(err, tournament){
       if(!err && tournament){
-        var updates = req.body;
-
         for(var key in updates){
           tournament[key] = updates[key];
         }
@@ -88,6 +90,7 @@ module.exports = function(app){
 
   app.get('/tournaments', methods.list);
   app.post('/tournaments', methods.post);
+  app.get('/tournaments/:id'+app.get('idRegex'), methods.get);
   app.get('/tournaments/:alias'+app.get('aliasRegex'), methods.get);
   app.del('/tournaments/:alias'+app.get('aliasRegex'), methods.delete);
   app.put('/tournaments/:alias'+app.get('aliasRegex'), methods.put);

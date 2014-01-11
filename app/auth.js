@@ -24,18 +24,19 @@ passport.deserializeUser(function(id, done){
   // Find user by email
   console.log(id);
   if(id){
-    Person.findOne({_id: id}, function(err, person){
-      if(err){
-        console.log(err);
-        done(err);
-      }else if(!person){
-        // Not logged in
-        return res.send(403);
-      }else{
-        console.log(person);
-        done(null, person);
-      }
-    });  
+    Person.getOne({_id: id}).then(
+      function(person){
+        done(null, person)
+      },
+      function(errObj){
+        if(errObj.status === 404){
+          // In this case, not finding the person means they aren't logged in
+          // MAY NEED TO CALL done()!!
+          return res.send(403);
+        }else{
+          done(errObj.err);
+        }
+      });
   }else{
     done(null, null);
   }

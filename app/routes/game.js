@@ -4,55 +4,50 @@ var Person = require('../models/person');
 var _ = require('underscore');
 var ObjectId = require('mongoose').Schema.ObjectId;
 
-
-var populate = ['headReferee', 'assistantReferees', 'teams.team', {path: 'teams.team', model: 'Team'}];
-
 var methods = {
 
   list: function(req, res){
     if(req.route.params.tournamentid){
-      Tournament.findOne({alias: req.route.params.tournamentid}, function(err, tournament){
-        if(!err && tournament){
-          Game.find({tournament: tournament._id}).populate(populate).exec(function(err, games){
-            if(!err){
+      Tournament.getOne({alias: req.route.params.tournamentid}).then(
+        function(tournament){
+          Game.get({tournament: tournament._id}).then(
+            function(games){
               return res.send(Game.format(games));
-            }else{
-              return res.send(500, err);
-            }
-          });
-        }else if(!tournament){
-          return res.send(404);
-        }else{
-          return res.send(500, err);
-        }
-      });
+            },
+            function(errObj){
+              return res.send(errObj.status, errObj.err);
+            });
+        },
+        function(errObj){
+          return res.send(errObj.status, errObj.err);
+        });
     }else{
-      Game.find().populate(populate).exec(function(err, games){
-        if(!err){
+      Game.get().then(
+        function(games){
           return res.send(Game.format(games));
-        }else{
-          return res.send(500, err);
-        }
-      });
+        },
+        function(errObj){
+          return res.send(errObj.status, errObj.err);
+        });
     }
 
   },
 
   get: function(req, res){
     var id = req.route.params.id;
-    Game.findOne({_id: id}).populate(populate).exec(function(err, game){
-      if(!err && game){
+    Game.getOne({_id: id}).then(
+      function(game){
         return res.send(Game.format(game));
-      }else if(!game){
-        return res.send(404);
-      }else{
-        return res.send(500, err);
-      }
-    });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   delete: function(req, res){
     var id = req.route.params.id;
+
+    // Keep as a find so populate() doesn't run
     Game.find({_id: new ObjectId(id)}, function(err, game){
       if(!err){
         return res.send(OutputFormat.success(game));

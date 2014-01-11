@@ -1,14 +1,16 @@
 var mongoose = require('mongoose');
 var Person = require('./person');
+var q = require('q');
 
 var TeamSchema = new mongoose.Schema({
-  alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,}$/},
+  alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,23}$/},
   name: {type: String, required: true, unique: false},
   captain: {type: mongoose.Schema.ObjectId, ref: 'Person'}
 });
 
 var Team = mongoose.model('Team', TeamSchema);
 
+var populate = 'captain';
 
 var format = function(team){
   return {
@@ -32,6 +34,41 @@ Team.format = function(team){
     return format(team);
   }
 };
+
+Team.getOne = function(search){
+  var deferred = q.defer();
+
+  Team.get(search).then(
+    function(result){
+      if(result.length === 0){
+        deferred.reject({status: 404});
+      }else{
+        deferred.resolve(result[0]);
+      }
+    },
+    function(errObj){
+      deferred.reject(errObj);
+    }
+    );
+
+  return deferred.promise;
+}
+
+Team.get = function(search){
+
+  var deferred = q.defer();
+  Team.find(search).populate(populate).exec(function(err, result){
+    if(!err && result){
+      deferred.resolve(result);
+    }else if(!result){
+      deferred.reject({status: 404});
+    }else{
+      deferred.reject({status: 500, err: err});
+    }
+  });
+
+  return deferred.promise;
+}
 
 
 module.exports = Team;

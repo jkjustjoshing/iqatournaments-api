@@ -1,12 +1,18 @@
 var mongoose = require('mongoose');
 var q = require('q');
+//var bcrypt = require('bcrypt');
 
 var PersonSchema = new mongoose.Schema({
-  name: {type: String, required: true}
+  name: {type: String, required: true},
+  email: {type: String, require: false},
+  password: {type: String, required: false}
 });
 
 PersonSchema.methods.verifyPassword = function(passwordToCheck) {
-  return true;
+  
+  // Person.getId()
+
+  // bcrypt.compare(passwordToCheck, )
 };
 
 var Person = mongoose.model('Person', PersonSchema);
@@ -37,19 +43,35 @@ Person.format = function(person){
   }
 };
 
-Person.getId = function(id){
-
+Person.getOne = function(search){
   var deferred = q.defer();
 
-  Person.findOne({_id: id}, function(err, person){
-    console.log('personn', person);
-    if(!err && person){
-      console.log(person);
-      deferred.resolve(person);
-    }else if(!person){
+  Person.get(search).then(
+    function(result){
+      if(result.length === 0){
+        deferred.reject({status: 404});
+      }else{
+        deferred.resolve(result[0]);
+      }
+    },
+    function(errObj){
+      deferred.reject(errObj);
+    }
+    );
+
+  return deferred.promise;
+}
+
+Person.get = function(search){
+
+  var deferred = q.defer();
+  Person.find(search, function(err, result){
+    if(!err && result){
+      deferred.resolve(result);
+    }else if(!result){
       deferred.reject({status: 404});
     }else{
-      return deferred.reject({status: 500, err: err});
+      deferred.reject({status: 500, err: err});
     }
   });
 

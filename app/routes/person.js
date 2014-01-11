@@ -6,18 +6,18 @@ var auth = require('../auth');
 var methods = {
 
   list: function(req, res){
-    Person.find(function(err, persons){
-      if(!err){
+    Person.get().then(
+      function(persons){
         return res.send(Person.format(persons));
-      }else{
-        return res.send(400, err);
-      }
-    });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   get: function(req, res){
     var id = req.route.params.id;
-    Person.getId(id).then(
+    Person.getOne({_id: id}).then(
       function(person){
         return res.send(Person.format(person));
       },
@@ -37,13 +37,17 @@ var methods = {
 
   delete: function(req, res){
     var id = req.route.params.id;
-    Person.findOne({_id: id}, function(err, person){
-      if(!err && person && person.remove()){
-        return res.send(204);
-      }else{
-        return res.send(404);
-      }
-    });
+    Person.getOne({_id: id}).then(
+      function(person){
+        if(person.remove()){
+          return res.send(204);
+        }else{
+          return res.send(500);
+        }
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   post: function(req, res){
@@ -64,7 +68,7 @@ var methods = {
   put: function(req, res){
     var id = req.route.params.id;
 
-    Person.getId(id).then(
+    Person.getOne({_id: id}).then(
       function(person){
         person.name = req.body.name;
 

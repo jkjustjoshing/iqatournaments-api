@@ -5,26 +5,24 @@ var ObjectId = require('mongoose').Schema.ObjectId;
 var methods = {
 
   list: function(req, res){
-    Team.find().populate('captain').exec(function(err, teams){
-      if(!err){
+    Team.get().then(
+      function(teams){
         return res.send(Team.format(teams));
-      }else{
-        return res.send(500, err);
-      }
-    });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   get: function(req, res){
     var alias = req.route.params.alias;
-    Team.findOne({alias: alias}).populate('captain').exec(function(err, team){
-      if(!err && team){
+    Team.getOne({alias: alias}).then(
+      function(team){
         return res.send(Team.format(team));
-      }else if (!team){
-        return res.send(404);
-      }else{
-        return res.send(500, err);
-      }
-    });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   },
 
   post: function(req, res){
@@ -37,28 +35,27 @@ var methods = {
       return res.send(404);
     }
 
-    Person.findOne({_id: req.body.captain}, function(err, captain){
-      if(!err && captain){
+    Person.getOne({_id: req.body.captain}).then(
+      function(team){
         team.captain = captain;
-      }else if (!captain){
-        return res.send(404);
-      }else{
-        return res.send(500, err);
-      }
-
-      team.save(function(err){
-        if(!err){
-          return res.send(201);
-        }else {
-          return res.send(500, err);
-        }
+        team.save(function(err){
+          if(!err){
+            return res.send(201);
+          }else {
+            return res.send(500, err);
+          }
+        });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
       });
-    });
   },
 
 
   delete: function(req, res){
     var alias = req.route.params.alias;
+
+    // Keep as find so that populate() doesn't run
     Team.findOne({alias: alias}, function(err, team){
       if(!err && team && team.remove()){
         return res.send(204);
@@ -71,8 +68,8 @@ var methods = {
   put: function(req, res){
     var alias = req.route.params.alias;
 
-    Team.findOne({alias: alias}).populate('captain').exec(function(err, team){
-      if(!err && team){
+    Team.getOne({alias: alias}).then(
+      function(team){
         var saveTeam = function(){
           team.save(function(err) {
             if(!err){
@@ -94,23 +91,19 @@ var methods = {
         if(!updates.captain){
           return saveTeam();
         }else{
-          Person.findOne({_id: updates.captain}, function(err, captain){
-            if(!err && captain){
+          Person.getOne({_id: updates.captain}).then(
+            function(captain){
               team.captain = captain;
               return saveTeam();
-            }else if (!captain){
-              return res.send(404);
-            }else{
-              return res.send(500, err);
-            }
-          });
+            },
+            function(errObj){
+              return res.send(errObj.status, errObj.err);
+            });
         }
-      }else if(!team){
-        return res.send(404);
-      }else{
-        return res.send(500, err);
-      }
-    });
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   }
 
 };

@@ -21,7 +21,7 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'jade');
 app.set('db', mongoose.connect(config.db));
-app.set('aliasRegex', '([a-zA-z0-9\-]{3,})');
+app.set('aliasRegex', '([a-zA-z0-9\-]{3,23})');
 app.set('idRegex', '([0-9a-fA-F]{24})');
 app.use(express.favicon());
 app.use(express.logger('dev'));
