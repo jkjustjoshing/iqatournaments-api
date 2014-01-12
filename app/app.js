@@ -41,7 +41,12 @@ app.all('*', function(req, res, next){
   res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true');
-  next();
+
+  if(req.method === 'OPTIONS'){
+    res.send(204);
+  }else{
+    next();
+  }
 });
 
 // development only
