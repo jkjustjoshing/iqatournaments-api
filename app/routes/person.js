@@ -102,7 +102,7 @@ module.exports = function(app) {
   // Logged in user
   app.get('/user/me', auth.restrict, methods.me);
   app.post('/user/login', auth.passport.authenticate('local'), methods.me);
-  app.post('/user/ogout', function(req, res){
+  app.post('/user/logout', function(req, res){
     req.logout();
     return res.send(200);
   });
