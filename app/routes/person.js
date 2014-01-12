@@ -70,7 +70,10 @@ var methods = {
 
     Person.getOne({_id: id}).then(
       function(person){
-        person.name = req.body.name;
+        //person.name = req.body.name;
+        for(var key in req.body){
+          person[key] = req.body[key];
+        }
 
         person.save(function(err) {
           if(!err){
@@ -90,10 +93,17 @@ var methods = {
 }
 
 module.exports = function(app) {
-  app.get('/me', auth.restrict, methods.me);
-  app.get('/person/list', methods.list);
+  app.get('/persons', methods.list);
   app.post('/person', methods.post);
   app.get('/person/:id'+app.get('idRegex'), methods.get);
   app.put('/person/:id'+app.get('idRegex'), methods.put);
   app.del('/person/:id'+app.get('idRegex'), methods.delete);
+
+  // Logged in user
+  app.get('/user/me', auth.restrict, methods.me);
+  app.post('/user/login', auth.passport.authenticate('local'), methods.me);
+  app.post('/user/ogout', function(req, res){
+    req.logout();
+    return res.send(200);
+  });
 }

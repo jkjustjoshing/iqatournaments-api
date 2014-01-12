@@ -3,26 +3,43 @@ var LocalStrategy = require('passport-local').Strategy;
 
 var Person = require('./models/person');
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    Person.findOne({ _id: username }).exec(function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      //if (!user.verifyPassword(password)) { return done(null, false); }
-      console.log(user);
-      return done(null, user);
-    });
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Person.getOne({ email: email }).then(
+      function(user){
+        console.log('person', user);
+        console.log(user.verifyPassword(password));
+        user.verifyPassword(password).then(
+          function(){
+            // Successfully logged in
+            console.log('done password matches');
+            return done(null, user);
+          },
+          function(){
+            // Passwords don't match
+            console.log('done no password');
+            return done(null, false); 
+          });        
+      },
+      function(errObj){
+        if(errObj.status === 404){
+          return done(null, false);
+        }else{
+          return done(errObj.err);
+        }
+      });
   }
 ));
 
 passport.serializeUser(function(user, done){
-  console.log(user);
   done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done){
   // Find user by email
-  console.log(id);
   if(id){
     Person.getOne({_id: id}).then(
       function(person){
@@ -45,15 +62,6 @@ passport.deserializeUser(function(id, done){
 
 var auth = {
   passport: passport,
-  routes: function(app){
-    app.post('/login', passport.authenticate('local'), function(req, res){
-      return res.send(200);
-    });
-    app.post('/logout', function(req, res){
-      req.logout();
-      return res.send(200);
-    });
-  },
 
   authenticate: function(req, res, next){
     passport.authenticate('local', function(err, user, info){
@@ -73,6 +81,7 @@ var auth = {
   }, 
   restrict: function(req, res, next){
     if(!req.isAuthenticated()){
+      console.log('restricti');
       res.send(401);
     }else{
       next();

@@ -9,10 +9,20 @@ var PersonSchema = new mongoose.Schema({
 });
 
 PersonSchema.methods.verifyPassword = function(passwordToCheck) {
-  
-  // Person.getId()
+  var deferred = q.defer();
 
-  // bcrypt.compare(passwordToCheck, )
+  var storedPassword = this.password;
+  if(storedPassword === passwordToCheck){
+    process.nextTick(deferred.resolve);
+  }else if(bcrypt){
+    bcrypt.compare(passwordToCheck, storedPassword, function(match){
+      if(match) deferred.resolve();
+      else deferred.reject();
+    })
+  }else{
+    process.nextTick(deferred.reject);
+  }
+  return deferred.promise;
 };
 
 var Person = mongoose.model('Person', PersonSchema);
@@ -22,7 +32,9 @@ var format = function(person){
   if(person && person.name){
     return {
       id: person._id,
-      name: person.name
+      name: person.name,
+      password: person.password,
+      email: person.email
     };
   }else{
     return undefined;

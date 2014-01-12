@@ -38,8 +38,9 @@ app.use(passport.session());
 app.use(app.router);
 
 app.all('*', function(req, res, next){
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Credentials', 'true');
   next();
 });
 
@@ -52,6 +53,5 @@ require('./routes/tournament')(app);
 require('./routes/person')(app);
 require('./routes/team')(app);
 require('./routes/game')(app);
-auth.routes(app);
 
 module.exports = app;

@@ -63,6 +63,7 @@ var methods = {
     var alias = req.route.params.alias;
     Tournament.findOne({alias: alias}, function(err, tournament){
       if(!err && tournament){
+        var updates = req.body;
         for(var key in updates){
           tournament[key] = updates[key];
         }
