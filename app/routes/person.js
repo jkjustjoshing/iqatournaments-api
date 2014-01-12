@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.ObjectId;
 var auth = require('../auth');
 
+
 var methods = {
 
   list: function(req, res){
@@ -53,7 +54,9 @@ var methods = {
   post: function(req, res){
     console.log('create');
     var person = new Person({
-      name: req.body.name
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password // NEED TO SECURE WITH BCRYPT
     });
 
     person.save(function(err){
@@ -88,6 +91,18 @@ var methods = {
       }
       );
 
+  },
+  search: function(req, res){
+
+    var searchRegex = new RegExp(req.query.name, 'i');
+
+    Person.get({name: searchRegex}).then(
+      function(persons){
+        return res.send(Person.format(persons));
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   }
 
 }
@@ -98,6 +113,8 @@ module.exports = function(app) {
   app.get('/person/:id'+app.get('idRegex'), methods.get);
   app.put('/person/:id'+app.get('idRegex'), methods.put);
   app.del('/person/:id'+app.get('idRegex'), methods.delete);
+
+  app.get('/person/search', methods.search);
 
   // Logged in user
   app.get('/user/me', auth.restrict, methods.me);
