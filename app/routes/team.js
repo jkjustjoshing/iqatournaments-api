@@ -36,7 +36,7 @@ var methods = {
     }
 
     Person.getOne({_id: req.body.captain}).then(
-      function(team){
+      function(captain){
         team.captain = captain;
         team.save(function(err){
           if(!err){
