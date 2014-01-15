@@ -104,6 +104,18 @@ var methods = {
       function(errObj){
         return res.send(errObj.status, errObj.err);
       });
+  },
+  search: function(req, res){
+
+    var searchRegex = new RegExp(req.query.name, 'i');
+
+    Team.get({name: searchRegex}).then(
+      function(teams){
+        return res.send(Team.format(teams));
+      },
+      function(errObj){
+        return res.send(errObj.status, errObj.err);
+      });
   }
 
 };
@@ -114,4 +126,8 @@ module.exports = function(app) {
   app.get('/teams/:alias'+app.get('aliasRegex'), methods.get);
   app.put('/teams/:alias'+app.get('aliasRegex'), methods.put);
   app.del('/teams/:alias'+app.get('aliasRegex'), methods.delete);
+
+  app.get('/teams/search', methods.search);
+
+
 };
