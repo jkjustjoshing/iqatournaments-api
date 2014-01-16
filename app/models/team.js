@@ -11,7 +11,7 @@ var TeamSchema = new mongoose.Schema({
 
 var Team = mongoose.model('Team', TeamSchema);
 
-var populate = 'captain, members';
+var populate = ['captain', 'members'];
 
 var format = function(team){
   return {
