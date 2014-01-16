@@ -123,11 +123,13 @@ var methods = {
 module.exports = function(app) {
   app.get('/teams', methods.list);
   app.post('/teams', methods.post);
+
+  app.get('/teams/search', methods.search);
+
   app.get('/teams/:alias'+app.get('aliasRegex'), methods.get);
   app.put('/teams/:alias'+app.get('aliasRegex'), methods.put);
   app.del('/teams/:alias'+app.get('aliasRegex'), methods.delete);
 
-  app.get('/teams/search', methods.search);
 
 
 };

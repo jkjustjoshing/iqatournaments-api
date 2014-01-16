@@ -1,5 +1,7 @@
 var Tournament = require('../models/tournament');
+var Team = require('../models/team');
 var moment = require('moment');
+var _ = require('underscore');
 
 var methods = {
 
@@ -82,6 +84,65 @@ var methods = {
         return res.send(err);
       }
     });
+  },
+
+  teams: {
+    post: function(req, res){
+
+      var searchObj;
+
+      if(req.body.alias){
+        searchObj = {alias: req.body.alias};
+      }else if(req.body.id){
+        searchObj = {_id: req.body.id};
+      }else{
+        return res.send(400);
+      }
+
+      Team.findOne(searchObj, function(err, team){
+        if(!err && team){
+          Tournament.findOne({_id: req.route.params.id}, function(err, tournament){
+            if(!err && tournament){
+
+              if(!tournament.teams){
+                tournament.teams = [];
+              }
+
+              var unique = (!tournament.teams.length) || _.every(tournament.teams, function(thisTeam){
+                console.log(thisTeam.toString() + '=' + team._id.toString(), thisTeam.toString() === team._id.toString());
+                if(thisTeam.toString() === team._id.toString()){
+                  return false;
+                }else{
+                  return true;
+                }
+              });
+
+              if(!unique){
+                return res.send(400, {error: 'Duplicate team added'});
+              }
+
+              tournament.teams.push(team);
+
+              tournament.save(function(err){
+                if(!err){
+                  return res.send(200);
+                }else{
+                  return res.send(500, err);
+                }
+              });
+            }else if(!tournament){
+              return res.send(404, {error: 'Tournament not found.'});
+            }else{
+              return res.send(500, err);
+            }
+          });
+        }else if(!team){
+          return res.send(404, {error: 'Team not found.'});
+        }else{
+          return res.send(500, err);
+        }
+      });
+    }
   }
 
 }
@@ -93,7 +154,12 @@ module.exports = function(app){
   app.post('/tournaments', methods.post);
   app.get('/tournaments/:id'+app.get('idRegex'), methods.get);
   app.get('/tournaments/:alias'+app.get('aliasRegex'), methods.get);
-  app.del('/tournaments/:alias'+app.get('aliasRegex'), methods.delete);
-  app.put('/tournaments/:alias'+app.get('aliasRegex'), methods.put);
+  app.del('/tournaments/:id'+app.get('idRegex'), methods.delete);
+  app.put('/tournaments/:id'+app.get('idRegex'), methods.put);
+
+  // Teams
+  app.post('/tournaments/:id'+app.get('idRegex')+'/teams', methods.teams.post);
+ // app.post('/tournaments/:alias'+app.get('aliasRegex')+'/teams', methods.teams.delete);
+
 
 }

@@ -2,13 +2,15 @@ var mongoose = require('mongoose');
 var moment = require('moment');
 var q = require('q');
 var Person = require('./person');
+var Team = require('./team');
 
 var TournamentSchema = new mongoose.Schema({
   alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,23}$/},
   name: {type: String, required: true, unique: false},
   director: {type: mongoose.Schema.ObjectId, ref: 'Person'},
   location: {type: String, required: true},
-  date: {type: String, required: true, default: moment().format('YYYY-DD-MM'), match: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/}
+  date: {type: String, required: true, default: moment().format('YYYY-DD-MM'), match: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/},
+  teams: [{type: mongoose.Schema.ObjectId, ref: 'Team'}]
 });
 
 var Tournament = mongoose.model('Tournament', TournamentSchema);
@@ -32,7 +34,7 @@ var formatDetails = function(tournament){
     date: tournament.date || "",
     director: Person.format(tournament.director),
     location: tournament.location || "",
-    teams: tournament.teams || [],
+    teams: Team.format(tournament.teams || []),
     games: tournament.games || []
   };
 };
@@ -77,7 +79,7 @@ Tournament.getOne = function(search){
 Tournament.get = function(search){
 
   var deferred = q.defer();
-  Tournament.find(search).populate('director').exec(function(err, result){
+  Tournament.find(search).populate('director, teams').exec(function(err, result){
     if(!err && result){
       deferred.resolve(result);
     }else if(!result){
