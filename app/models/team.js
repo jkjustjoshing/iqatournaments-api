@@ -5,19 +5,21 @@ var q = require('q');
 var TeamSchema = new mongoose.Schema({
   alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,23}$/},
   name: {type: String, required: true, unique: false},
-  captain: {type: mongoose.Schema.ObjectId, ref: 'Person'}
+  captain: {type: mongoose.Schema.ObjectId, ref: 'Person'},
+  members: [{type: mongoose.Schema.ObjectId, ref: 'Person'}]
 });
 
 var Team = mongoose.model('Team', TeamSchema);
 
-var populate = 'captain';
+var populate = 'captain, members';
 
 var format = function(team){
   return {
     id: team._id,
     name: team.name,
     alias: team.alias,
-    captain: Person.format(team.captain)
+    captain: Person.format(team.captain),
+    members: Person.format(team.members)
   };
 };
 

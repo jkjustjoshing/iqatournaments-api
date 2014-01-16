@@ -109,7 +109,6 @@ var methods = {
               }
 
               var unique = (!tournament.teams.length) || _.every(tournament.teams, function(thisTeam){
-                console.log(thisTeam.toString() + '=' + team._id.toString(), thisTeam.toString() === team._id.toString());
                 if(thisTeam.toString() === team._id.toString()){
                   return false;
                 }else{

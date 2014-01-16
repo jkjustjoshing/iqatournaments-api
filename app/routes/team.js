@@ -1,6 +1,7 @@
 var Team = require('../models/team');
 var Person = require('../models/person');
 var ObjectId = require('mongoose').Schema.ObjectId;
+var _ = require('underscore');
 
 var methods = {
 
@@ -116,6 +117,63 @@ var methods = {
       function(errObj){
         return res.send(errObj.status, errObj.err);
       });
+  },
+
+  members: {
+    post: function(req, res){
+
+      var searchObj;
+
+      if(req.body.id){
+        searchObj = {_id: req.body.id};
+      }else{
+        return res.send(400);
+      }
+
+      Person.findOne(searchObj, function(err, person){
+        if(!err && person){
+          Team.findOne({_id: req.route.params.id}, function(err, team){
+            if(!err && team){
+
+              if(!team.members){
+                team.members = [];
+              }
+
+              var unique = (!team.members.length) || _.every(team.members, function(thisPerson){
+                console.log(thisPerson.toString() + '=' + person._id.toString(), thisPerson.toString() === person._id.toString());
+                if(thisPerson.toString() === person._id.toString()){
+                  return false;
+                }else{
+                  return true;
+                }
+              });
+
+              if(!unique){
+                return res.send(400, {error: 'Duplicate member added'});
+              }
+
+              team.members.push(person);
+
+              team.save(function(err){
+                if(!err){
+                  return res.send(200);
+                }else{
+                  return res.send(500, err);
+                }
+              });
+            }else if(!team){
+              return res.send(404, {error: 'Team not found.'});
+            }else{
+              return res.send(500, err);
+            }
+          });
+        }else if(!person){
+          return res.send(404, {error: 'Person not found.'});
+        }else{
+          return res.send(500, err);
+        }
+      });
+    }
   }
 
 };
@@ -127,8 +185,12 @@ module.exports = function(app) {
   app.get('/teams/search', methods.search);
 
   app.get('/teams/:alias'+app.get('aliasRegex'), methods.get);
-  app.put('/teams/:alias'+app.get('aliasRegex'), methods.put);
-  app.del('/teams/:alias'+app.get('aliasRegex'), methods.delete);
+  app.put('/teams/:id'+app.get('idRegex'), methods.put);
+  app.del('/teams/:id'+app.get('idRegex'), methods.delete);
+
+  // Teams
+  app.post('/teams/:id'+app.get('idRegex')+'/members', methods.members.post);
+  // app.del('/teams/:id'+app.get('idRegex')+'/members', methods.members.delete);
 
 
 
