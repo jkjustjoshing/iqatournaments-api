@@ -7,41 +7,20 @@ var ObjectId = require('mongoose').Schema.ObjectId;
 var methods = {
 
   list: function(req, res){
-    if(req.route.params.tournamentid){
-      Tournament.getOne({alias: req.route.params.tournamentid}).then(
-        function(tournament){
-          Game.get({tournament: tournament._id}).then(
-            function(games){
-              return res.send(Game.format(games));
-            },
-            function(errObj){
-              return res.send(errObj.status, errObj.err);
-            });
-        },
-        function(errObj){
-          return res.send(errObj.status, errObj.err);
-        });
-    }else{
-      Game.get().then(
-        function(games){
-          return res.send(Game.format(games));
-        },
-        function(errObj){
-          return res.send(errObj.status, errObj.err);
-        });
-    }
-
+    Game.get({tournament: req.route.params.tournamentid}).then(function(games){
+      return res.send(Game.format(games));
+    });
   },
 
   get: function(req, res){
     var id = req.route.params.id;
-    Game.getOne({_id: id}).then(
-      function(game){
+    Game.getOne({_id: id}).then(function(game){
+      if(game.tournament.toString() != req.route.params.tournamentid){
+        return res.send(404);
+      }else{
         return res.send(Game.format(game));
-      },
-      function(errObj){
-        return res.send(errObj.status, errObj.err);
-      });
+      }
+    });
   },
 
   delete: function(req, res){
@@ -63,11 +42,9 @@ var methods = {
       startTime: req.body.startTime,
       endTime: req.body.endTime,
       gameTime: req.body.gameTime,
+      tournament: req.route.params.tournamentid
     };
 
-    if(req.body.tournament){
-      newGame.tournament = req.body.tournament.id || req.body.tournament;
-    }
     if(req.body.headReferee){
       newGame.headReferee = req.body.headReferee.id || req.body.headReferee;
     }
@@ -80,21 +57,42 @@ var methods = {
         newGame.teams.push({team: team});
       });
     }
-    if(_.isArray(req.body.assistantReferee)){
-      newGame.assistantReferees = req.body.assistantReferees;
-    }else{
-      return res.send(500, {error: 'assistantReferees must be array'});
+    if(req.body.assistantReferees){
+      if(_.isArray(req.body.assistantReferees)){
+        newGame.assistantReferees = req.body.assistantReferees;
+      }else{
+        return res.send(500, {error: 'assistantReferees must be array'});
+      }
     }
 
     var game = new Game(newGame);
 
     game.save(function(err){
       if(!err){
-        return res.send(201);
-      }else {
+
+        Tournament.getOne({_id: req.route.params.tournamentid}).then(function(tournament){
+          if(!tournament.games){
+            tournament.games = [];
+          }
+
+          tournament.games.push(game._id);
+
+          tournament.save(function(err){
+            if(!err){
+              return res.send(200);
+            }else{
+              return res.send(500, err);
+            }
+          });
+
+        });
+
+
+      }else{
         return res.send(500, err);
       }
     });
+
   },
 
   put: function(req, res){
@@ -240,21 +238,21 @@ var methods = {
 module.exports = function(app) {
 
 
-  // var root = '/tournaments/:tournamentid'+app.get('aliasRegex')+'/games';
+  var root = '/tournaments/:tournamentid'+app.get('idRegex');
   // app.get(root, methods.list);
   // app.post(root, methods.create);
   // app.get(root+'/:id'+app.get('idRegex'), methods.get);
   // app.del(root+'/:id'+app.get('idRegex'), methods.delete);
-  app.get('/games', methods.list);
-  app.post('/games', methods.post);
-  app.get('/games/:id'+app.get('idRegex'), methods.get);
-  app.put('/games/:id'+app.get('idRegex'), methods.put);
+  app.get(root+'/games', methods.list);
+  app.post(root+'/games', methods.post);
+  app.get(root+'/games/:id'+app.get('idRegex'), methods.get);
+  app.put(root+'/games/:id'+app.get('idRegex'), methods.put);
   
   // Assistant Referees
-  app.post('/games/:id'+app.get('idRegex')+'/assistantReferees', methods.assistantRefs.post);
-  app.del('/games/:id'+app.get('idRegex')+'/assistantReferees', methods.assistantRefs.delete);
+  app.post(root+'/games/:id'+app.get('idRegex')+'/assistantReferees', methods.assistantRefs.post);
+  app.del(root+'/games/:id'+app.get('idRegex')+'/assistantReferees', methods.assistantRefs.delete);
   
   // Teams
-  app.post('/games/:id'+app.get('idRegex')+'/teams', methods.teams.post);
-  app.post('/games/:id'+app.get('idRegex')+'/teams', methods.teams.delete);
+  app.post(root+'/games/:id'+app.get('idRegex')+'/teams', methods.teams.post);
+  app.post(root+'/games/:id'+app.get('idRegex')+'/teams', methods.teams.delete);
 }

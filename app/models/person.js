@@ -4,8 +4,8 @@ var q = require('q');
 
 var PersonSchema = new mongoose.Schema({
   name: {type: String, required: true},
-  email: {type: String, require: false},
-  password: {type: String, required: false, unique: true}
+  email: {type: String, require: false, unique: true},
+  password: {type: String, required: false}
 });
 
 PersonSchema.methods.verifyPassword = function(passwordToCheck) {

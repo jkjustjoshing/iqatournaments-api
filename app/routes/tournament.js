@@ -2,6 +2,7 @@ var Tournament = require('../models/tournament');
 var Team = require('../models/team');
 var moment = require('moment');
 var _ = require('underscore');
+var Game = require('../models/game');
 
 var methods = {
 
@@ -25,7 +26,12 @@ var methods = {
 
     Tournament.getOne(searchObject).then(
       function(tournament){
-        return res.send(Tournament.details(tournament));
+        console.log('got tournament '+tournament.toString());
+        Game.get({tournament: tournament._id}).then(function(games){
+          tournament.games = games;
+        }).fin(function(){
+          return res.send(Tournament.details(tournament));
+        });
       }, 
       function(errObj){
         return res.send(errObj.status, errObj.err);

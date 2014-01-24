@@ -3,6 +3,7 @@ var moment = require('moment');
 var q = require('q');
 var Person = require('./person');
 var Team = require('./team');
+var Game = require('./game');
 
 var TournamentSchema = new mongoose.Schema({
   alias: {type: String, required: true, unique: true, match: /^[A-Za-z0-9\-]{3,23}$/},
@@ -10,7 +11,9 @@ var TournamentSchema = new mongoose.Schema({
   director: {type: mongoose.Schema.ObjectId, ref: 'Person'},
   location: {type: String, required: true},
   date: {type: String, required: true, default: moment().format('YYYY-DD-MM'), match: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/},
-  teams: [{type: mongoose.Schema.ObjectId, ref: 'Team'}]
+  pitches: [],
+  teams: [{type: mongoose.Schema.ObjectId, ref: 'Team'}],
+  games: [{type: mongoose.Schema.ObjectId, ref: 'Game'}]
 });
 
 var Tournament = mongoose.model('Tournament', TournamentSchema);
@@ -34,8 +37,8 @@ var formatDetails = function(tournament){
     date: tournament.date || "",
     director: Person.format(tournament.director),
     location: tournament.location || "",
-    teams: Team.format(tournament.teams || []),
-    games: tournament.games || []
+    teams: Team.basic(tournament.teams || []),
+    games: Game.format(tournament.games || [])
   };
 };
 
@@ -79,7 +82,7 @@ Tournament.getOne = function(search){
 Tournament.get = function(search){
 
   var deferred = q.defer();
-  Tournament.find(search).populate('director, teams').exec(function(err, result){
+  Tournament.find(search).populate(['director', 'teams', 'games']).exec(function(err, result){
     if(!err && result){
       deferred.resolve(result);
     }else if(!result){
@@ -88,6 +91,20 @@ Tournament.get = function(search){
       deferred.reject({status: 500, err: err});
     }
   });
+
+  return deferred.promise;
+}
+
+Tournament.addGame = function(game){
+  var deferred = q.defer();
+
+  Tournament.getOne({_id: game.tournament}).then(function(tournament){
+    tournament.games.push(game.id);
+    tournament.save().then(function(){
+      deferred.resolve();
+    })
+  });
+
 
   return deferred.promise;
 }

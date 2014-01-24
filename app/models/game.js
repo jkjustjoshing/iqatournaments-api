@@ -5,7 +5,7 @@ var ObjectId = mongoose.Schema.ObjectId;
 var q = require('q');
 
 var GameSchema = new mongoose.Schema({
-  tournament: {type: ObjectId, required: true, ref: 'Tournament'},
+  tournament: {type: ObjectId, ref: 'Tournament'},
   pitch: {type: String, required: false},
   startTime: {type: String, required: false}, // regex 2014-04-09T11:20+05:00
   endTime: {type: String, required: false}, // regex 2014-04-09T11:20+05:00
@@ -15,7 +15,7 @@ var GameSchema = new mongoose.Schema({
   teams: [{
     team: {type: ObjectId, required: true, ref: 'Team'},
     score: {type: Number, required: false},
-    snatch: {type: Boolean, required: false}
+    snatch: {type: Boolean, required: false} // To Do - account for overtime snatches
   }],
   assistantReferees: [
     {type: ObjectId, required: false, ref: 'Person'}
@@ -26,17 +26,13 @@ var populate = ['headReferee', 'assistantReferees', 'teams.team', {path: 'teams.
 
 var Game = mongoose.model('Game', GameSchema);
 
-
 var format = function(game){
   var format = {
     id: game._id,
-    tournament: game.tournament,
     pitch: game.pitch,
     assistantReferees: Person.format(game.assistantReferees),
     headReferee: Person.format(game.headReferee)
   };
-
-  console.log(game.teams);
 
   var teams = [];
   for(var i = 0; i < game.teams.length; ++i){
@@ -46,7 +42,6 @@ var format = function(game){
     };
     teams[i].team = Team.format(game.teams[i].team);
   }
-  console.log(teams);
   format.teams = teams;
 
   return format;

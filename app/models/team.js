@@ -23,6 +23,15 @@ var format = function(team){
   };
 };
 
+var basic = function(team){
+  return {
+    id: team._id,
+    name: team.name,
+    alias: team.alias,
+    captain: Person.format(team.captain)
+  };
+};
+
 Team.format = function(team){
   if(Array.isArray(team)){
     // Array of games
@@ -34,6 +43,20 @@ Team.format = function(team){
   }else{
     // Single team
     return format(team);
+  }
+};
+
+Team.basic = function(team){
+  if(Array.isArray(team)){
+    // Array of games
+    var formatted = [];
+    for(var i = 0; i < team.length; ++i){
+      formatted[formatted.length] = basic(team[i]);
+    }
+    return formatted;
+  }else{
+    // Single team
+    return basic(team);
   }
 };
 
