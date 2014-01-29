@@ -1,0 +1,31 @@
+Things to do and other thoughts
+
+
+Message consistency
+  When sending a 4xx or 5xx error, make the JSON response consistent, so errors can more easily be shown on the frontend.
+  When a POST or PUT has incorrectly formatted data, the response should give a reason
+
+API Documentation
+  Update Apiary docs
+
+Duplicate detection
+  Don't allow a team to play a game against themself, don't allow duplicate people on teams or duplicate teams in tournaments, etc.
+
+Conflict detection
+  Detect conflicts in a schedule for a tournament (maybe endpoint /tournament/{tournamentalias}/conflicts)
+
+Person Creation
+  Scenario: A tournament director wants to schedule a referee who doesn't have an account. In the autocomplete dropdown there should be a "add new person" link, which creates a new entry in the database. This should be claimable so it can be linked to an account in the future.
+
+Ref flair
+  Add ref certification field to a person (assistant, snitch, head)
+
+Bcrypt
+  Let passwords get encrypted. Also, implement password reset
+
+Games
+  Validate start time sent to game.
+  More clearly differentiate between a past game and a future game.
+
+Tests!!!!
+  Unit tests!
