@@ -185,10 +185,11 @@ module.exports = function(app) {
   app.get('/teams/search', methods.search);
 
   app.get('/teams/:alias'+app.get('aliasRegex'), methods.get);
+  app.get('/teams/:id'+app.get('idRegex'), methods.get);
   app.put('/teams/:id'+app.get('idRegex'), methods.put);
   app.del('/teams/:id'+app.get('idRegex'), methods.delete);
 
-  // Teams
+  // Members
   app.post('/teams/:id'+app.get('idRegex')+'/members', methods.members.post);
   // app.del('/teams/:id'+app.get('idRegex')+'/members', methods.members.delete);
 

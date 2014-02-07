@@ -25,13 +25,18 @@ var methods = {
 
   delete: function(req, res){
     var id = req.route.params.id;
+    var tournamentid = req.route.params.tournamentid;
 
     // Keep as a find so populate() doesn't run
     Game.find({_id: new ObjectId(id)}, function(err, game){
       if(!err){
-        return res.send(OutputFormat.success(game));
+        if(game.tournament.toString() == tournamentid && game.remove()){
+          return res.send(204);
+        }else{
+          return res.send(404);
+        }
       }else{
-        return res.send(OutputFormat.error(err));
+        return res.send(500, err);
       }
     });
   },
@@ -96,6 +101,28 @@ var methods = {
   },
 
   put: function(req, res){
+    var id = req.route.params.id;
+    var tournamentid = req.route.params.tournamentid;
+    Game.findOne({_id: id}, function(game){
+      if(game.tournament.toString() != tournamentid){
+        return res.send(404);
+      }
+
+      // Add some validation here to restrict which fields can be updated
+      var updates = req.body;
+      for(var key in updates){
+        game[key] = updates[key];
+      }
+
+      game.save(function(err) {
+        if(!err){
+          return res.send(Game.format(game));
+        }else{
+          return res.send(400, err);
+        }
+      });
+
+    });
   },
 
   assistantRefs: {

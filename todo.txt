@@ -4,6 +4,14 @@ Things to do and other thoughts
 Message consistency
   When sending a 4xx or 5xx error, make the JSON response consistent, so errors can more easily be shown on the frontend.
   When a POST or PUT has incorrectly formatted data, the response should give a reason
+  {
+    message: 'Overall human readable error message, can be displayed in banner.',
+    fields: {
+      email: 'Duplicate field',
+      name: 'Invalid character'
+    }
+
+  }
 
 API Documentation
   Update Apiary docs

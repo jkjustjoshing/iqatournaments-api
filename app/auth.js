@@ -10,17 +10,14 @@ passport.use(new LocalStrategy({
   function(email, password, done) {
     Person.getOne({ email: email }).then(
       function(user){
-        console.log('person', user);
-        console.log(user.verifyPassword(password));
+        console.log(password);
         user.verifyPassword(password).then(
           function(){
             // Successfully logged in
-            console.log('done password matches');
             return done(null, user);
           },
           function(){
             // Passwords don't match
-            console.log('done no password');
             return done(null, false); 
           });        
       },
@@ -69,11 +66,9 @@ var auth = {
         return next(err);
       }else if(!user){
         // Not logged in
-        console.log('not logged in', info);
         return res.send(200, 'not logged in');
       }else{
         // Logged in
-        console.log('logged in', user, info);
         return res.send(200, 'logged in');
       }
     })(req, res, next);

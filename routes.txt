@@ -1,0 +1,85 @@
+Routes
+
+__________________________________________
+
+/tournaments
+  GET - list of tournaments
+  POST - create a tournament
+
+/tournaments/{alias}
+  GET - get a tournament
+
+/tournaments/{id}
+  GET - get a tournament
+  DELETE - delete a tournament
+  PUT - edit a tournament
+
+/tournaments/{id}/teams
+  GET - get a list of teams for a tournament
+  POST - add a team to a tournament
+___________________________________________
+
+/persons
+  GET - list of people
+  POST - create a person
+
+/persons/{id}
+  GET - get a person
+  PUT - edit a person
+  DELETE - delete a person
+
+/persons/search
+  GET - search for a person (for autocomplete)
+
+
+_____________________________________________
+
+/user/me
+  GET - get logged in user's info (same as /pesons/{id} for logged in user)
+
+/user/login
+  POST - log in (send 'email' and 'password' fields)
+/user/logout
+  POST - log out current user
+
+_______________________________________________
+
+/teams
+  GET - list of teams
+  POST - create a new team
+
+/teams/search
+  GET - search for a team (for autocomplete)
+
+/teams/{alias}
+  GET - get a team
+
+/teams/{id}
+  GET - get a team
+  PUT - edit a team
+  DELETE - delete a team
+
+________________________________________________
+
+/teams/{id}/members
+  POST - add a member to a team
+  DELETE - remove a member from a team
+
+______________________________________________
+
+/tournaments/{id}/games
+  GET - get games for a tournament
+  POST - create a game for a tournament
+
+/tournaments/{id}/games/{id}
+  GET - get a game
+  PUT - edit a game
+
+/tournaments/{id}/games/{id}/assistantReferees
+  POST - add an assistant referee
+  DELETE - remove an assistant referee
+
+/tournaments/{id}/games/{id}/teams
+  POST - add a team to a game
+  DELETE - remove a team from a game
+

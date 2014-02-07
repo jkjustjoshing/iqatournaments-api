@@ -52,19 +52,30 @@ var methods = {
   },
 
   post: function(req, res){
-    console.log('create');
-    var person = new Person({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password // NEED TO SECURE WITH BCRYPT
-    });
+    // Create person
+    // If there is a logged in user, mark as creator and don't
+    // save password
+    // If no logged in user, require password
 
-    person.save(function(err){
-      if(!err){
-        return res.send(201);
-      }else {
-        return res.send(400, err);
-      }
+    if(!Person.passwordComplexity(req.body.password)){
+      return res.send(400, {error: 'Password too short.'});
+    }
+
+    Person.hashPassword(req.body.password).then(function(hash){
+
+      var person = new Person({
+        name: req.body.name,
+        email: req.body.email,
+        password: hash
+      });
+
+      person.save(function(err){
+        if(!err){
+          return res.send(201);
+        }else {
+          return res.send(400, err);
+        }
+      });
     });
   },
 
@@ -109,10 +120,10 @@ var methods = {
 
 module.exports = function(app) {
   app.get('/persons', methods.list);
-  app.post('/person', methods.post);
-  app.get('/person/:id'+app.get('idRegex'), methods.get);
-  app.put('/person/:id'+app.get('idRegex'), methods.put);
-  app.del('/person/:id'+app.get('idRegex'), methods.delete);
+  app.post('/persons', methods.post);
+  app.get('/persons/:id'+app.get('idRegex'), methods.get);
+  app.put('/persons/:id'+app.get('idRegex'), methods.put);
+  app.del('/persons/:id'+app.get('idRegex'), methods.delete);
 
   app.get('/person/search', methods.search);
 

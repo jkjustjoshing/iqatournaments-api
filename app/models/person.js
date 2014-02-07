@@ -1,32 +1,50 @@
 var mongoose = require('mongoose');
 var q = require('q');
-//var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt');
+var ObjectId = require('mongoose').Schema.ObjectId;
 
 var PersonSchema = new mongoose.Schema({
   name: {type: String, required: true},
   email: {type: String, require: false, unique: true},
-  password: {type: String, required: false}
+  password: {type: String, required: false},
+  creator: {type: ObjectId, ref: 'Person'}
 });
 
 PersonSchema.methods.verifyPassword = function(passwordToCheck) {
   var deferred = q.defer();
 
   var storedPassword = this.password;
-  if(storedPassword === passwordToCheck){
-    process.nextTick(deferred.resolve);
-  }else if(bcrypt){
-    bcrypt.compare(passwordToCheck, storedPassword, function(match){
-      if(match) deferred.resolve();
-      else deferred.reject();
-    })
-  }else{
-    process.nextTick(deferred.reject);
-  }
+
+  console.log(this.password)
+
+  bcrypt.compare(passwordToCheck, storedPassword, function(err, match){
+    if(err) {
+      deferred.reject(err);
+    }else if(match){
+      deferred.resolve();
+    }
+    else deferred.reject('No match');
+  });
   return deferred.promise;
 };
 
 var Person = mongoose.model('Person', PersonSchema);
 
+Person.passwordComplexity = function(passwordToCheck){
+  return passwordToCheck.length >= 8;
+};
+
+Person.hashPassword = function(passwordToHash){
+  var deferred = q.defer();
+  bcrypt.hash(passwordToHash, 12 /*salt complexity*/, function(err, hash){
+    if(err){
+      deferred.reject(err);
+    }else{
+      deferred.resolve(hash);
+    }
+  });
+  return deferred.promise;
+};
 
 var format = function(person){
   if(person && person.name){
